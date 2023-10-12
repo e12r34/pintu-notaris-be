@@ -1,0 +1,40 @@
+GET http://localhost:3000/todo
+
+###
+GET http://localhost:3000/todo/1693812317161
+###
+
+DELETE http://localhost:3000/todo/1697121052422
+
+###
+
+POST http://localhost:3000/todo
+Content-Type: application/json
+
+{
+    "data": "ini datanya",
+    "keterangan": "Keterangan"
+}
+
+###
+
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "username":"mpd1",
+    "password":"mpdmpd"
+}
+
+
+###
+
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+    "nama":"MPP",
+    "username":"mpp1",
+    "password":"mppmpp",
+    "role":"mpp"
+}
