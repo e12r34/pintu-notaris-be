@@ -10,10 +10,12 @@ export class CustomExceptionFilter implements ExceptionFilter {
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
+    
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
-      message = exception.getResponse() as string;
+      const sub_message = exception.getResponse();
+      message=sub_message['message']
     } 
     else if (exception instanceof QueryFailedError) {
         // Handle TypeORM QueryFailedError (database-related error)
@@ -23,9 +25,10 @@ export class CustomExceptionFilter implements ExceptionFilter {
 
         // Include the SQL error message in the response
         message += `: ${sqlErrorMessage}`;
-  
     } 
-    
+    else{
+      console.log(exception)
+    }
 
     response.status(status).json({
       status,

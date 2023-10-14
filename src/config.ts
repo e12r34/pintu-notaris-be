@@ -1,3 +1,7 @@
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
 export default {
-    secret: 'Th3Passw0rdisS3cr3tBrowww',
-  };
+  secret: process.env.JWT_SECRET || 'defaultSecretValueisS3cr3t', // You can provide a default value here
+};

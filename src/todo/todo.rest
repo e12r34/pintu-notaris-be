@@ -1,4 +1,4 @@
-GET http://localhost:3000/todo
+GET http://localhost:3000/
 
 ###
 GET http://localhost:3000/todo/1693812317161
@@ -23,7 +23,7 @@ Content-Type: application/json
 
 {
     "username":"mpd1",
-    "password":"mpdmpd"
+    "password":"mpdmpds"
 }
 
 
@@ -37,4 +37,44 @@ Content-Type: application/json
     "username":"mpp1",
     "password":"mppmpp",
     "role":"mpp"
+}
+
+###
+POST http://localhost:3000/kondite/
+Content-Type: application/json
+
+{
+  "jenisLayanan": "Sample Service",
+  "kodeVoucher": "ABC123",
+  "skPengangkatanPindah": {
+    "nomorSurat": "SK123",
+    "tanggalSurat": "2023-10-13 00:00:00",  
+    "file": "sk123.pdf"
+  },
+  "beritaAcaraSumpah": {
+    "nomorSurat": "BA123",
+    "tanggalSurat": "2023-10-13 00:00:00",  
+    "file": "ba123.pdf"
+  },
+  "suratPernyataanPemegangProtokol": {
+    "nomorSurat": "SPP123",
+    "tanggalSurat": "2023-10-13 00:00:00", 
+    "file": "spp123.pdf"
+  },
+  "suratPernyataanJumlahAktaNotaris": {
+    "nomorSurat": "SPP123",
+    "tanggalSurat": "2023-10-13 00:00:00", 
+    "file": "spp123.pdf",
+    "jumlahAktaDisahkan": 10,
+    "jumlahAktaDibutuhkan": 20
+  }
+}
+
+
+###
+PUT http://localhost:3000/kondite/7a72695d-c60d-487c-90cd-2c921c789f86
+Content-Type: application/json
+
+{
+  "jenisLayanan": "Sample Service2"
 }
