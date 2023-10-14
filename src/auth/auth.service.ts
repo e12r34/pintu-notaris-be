@@ -4,6 +4,7 @@ import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import config from 'src/config';
 
 
 // export type User = any;
@@ -15,42 +16,58 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     ) {}
 
-  private readonly users = [
-    {
-      userId: 1,
-      username: 'john',
-      password: 'changeme',
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess',
-    },
-  ];
-
-  // async findOne(username: string): Promise<User | undefined> {
-  //   return this.users.find(user => user.username === username);
-  // }
+  async refreshToken(token:string){
+    const payload = await this.jwtService.verifyAsync(
+      token,
+      {
+        secret: config.refreshSecret
+      }
+    );
+    const user = await this.userRepository.findOneBy({id:payload['id']});
+    if (!user) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+    return {
+      accessToken: await this.jwtService.signAsync(
+        {
+          id:user.id,
+          nama:user.nama,
+          username:user.username,
+          role:user.role.split(','),
+          isActive:user.isactive
+        }),
+      refreshToken: token
+  };
+  }
 
   async login(username: string, password: string) {
     const user = await this.userRepository.findOneBy({username:username});
+    if (!user) {
+      throw new UnauthorizedException('Invalid username or password');
+    }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       throw new UnauthorizedException();
-
-      // return {
-      //   message: 'Invalid username or password'
-      // }
     }
 
     return {
-        access_token: await this.jwtService.signAsync(
+        accessToken: await this.jwtService.signAsync(
           {
+            id:user.id,
             nama:user.nama,
-            username:username,
-            role:user.role,
+            username:user.username,
+            role:user.role.split(','),
             isActive:user.isactive
           }),
+        refreshToken: await this.jwtService.signAsync(
+          {
+            id:user.id
+          },
+          {
+            secret: config.refreshSecret,
+            expiresIn: '1d'
+          }
+          )
     };
   }
 

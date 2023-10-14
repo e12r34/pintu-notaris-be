@@ -18,13 +18,27 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/auth/login
+POST http://137.184.126.1/auth/login
 Content-Type: application/json
 
 {
-    "username":"mpd1",
-    "password":"mpdmpds"
+    "username":"notaris",
+    "password":"n0t4r1s"
 }
+
+###
+POST http://localhost:3000/auth/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImUyMTY1YmEyLTZiZDQtNDgyYS05NWMxLWU3ZWMyZDkyMzFkZiIsImlhdCI6MTY5NzI5NDkxNSwiZXhwIjoxNjk3MzgxMzE1fQ.tZA4FJ-dVxsXNgQV011O3MmLd3B-MNnC15-GWPrXVPM"
+}
+###
+
+GET http://localhost:3000/api/kondite/631bfb80-893f-4e08-a16f-9a4e07b11618
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRkMTgxYzZjLTVjZGItNDNjNC1iNGY2LWFkOGIwZGE1MDdmZCIsIm5hbWEiOiJTdXBlclVzZXIgMiIsInVzZXJuYW1lIjoic3UyIiwicm9sZSI6WyJtcGQiLCJtcHciLCJtcHAiXSwiaXNBY3RpdmUiOnRydWUsImlhdCI6MTY5NzI5Njk3NSwiZXhwIjoxNjk3Mjk4Nzc1fQ.ary_Itf8xgfPCWbUmFFCx4feQphE8Zt_EsRdOM8_DGY
+
 
 
 ###
@@ -33,36 +47,37 @@ POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
-    "nama":"MPP",
-    "username":"mpp1",
-    "password":"mppmpp",
-    "role":"mpp"
+    "nama":"SuperUser 2",
+    "username":"su2",
+    "password":"susususu",
+    "role":["mpd","mpw","mpp"]
 }
 
 ###
-POST http://localhost:3000/kondite/
+POST http://localhost:3000/api/kondite/
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImUyMTY1YmEyLTZiZDQtNDgyYS05NWMxLWU3ZWMyZDkyMzFkZiIsIm5hbWEiOiJOb3RhcmlzIDEiLCJ1c2VybmFtZSI6Im5vdGFyaXMxIiwicm9sZSI6WyJub3RhcmlzIl0sImlzQWN0aXZlIjp0cnVlLCJpYXQiOjE2OTcyOTQ5MTUsImV4cCI6MTY5NzI5NjcxNX0.dOMaB06ogBHOzK_kWJNXsGd8XKhxg_5H6af83bz0TVI
 
 {
   "jenisLayanan": "Sample Service",
-  "kodeVoucher": "ABC123",
+  "kodeVoucher": "ABC1234",
   "skPengangkatanPindah": {
     "nomorSurat": "SK123",
-    "tanggalSurat": "2023-10-13 00:00:00",  
-    "file": "sk123.pdf"
+    "tanggalSurat": "2023-10-13 00:00:00",
+    "file" : ""
   },
   "beritaAcaraSumpah": {
-    "nomorSurat": "BA123",
+    "nomorSurat": "BA1234",
     "tanggalSurat": "2023-10-13 00:00:00",  
     "file": "ba123.pdf"
   },
   "suratPernyataanPemegangProtokol": {
-    "nomorSurat": "SPP123",
+    "nomorSurat": "SPP1234",
     "tanggalSurat": "2023-10-13 00:00:00", 
     "file": "spp123.pdf"
   },
   "suratPernyataanJumlahAktaNotaris": {
-    "nomorSurat": "SPP123",
+    "nomorSurat": "SPP1234",
     "tanggalSurat": "2023-10-13 00:00:00", 
     "file": "spp123.pdf",
     "jumlahAktaDisahkan": 10,

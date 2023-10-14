@@ -6,7 +6,7 @@ export class SuratPernyataanPemegangProtokolEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   nomorSurat: string;
 
   @Column({ type: 'date' })

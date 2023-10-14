@@ -3,10 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TodoModule } from './todo/todo.module';
-import { JsonHeaderMiddleware } from './json-header/json-header.middleware';
+import { JwtMiddleware } from './jwt/jwt.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './auth/user.entity';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { CustomExceptionFilter } from './exception.filter';
 import { NestMinioModule } from 'nestjs-minio';
 import { KonditeModule } from './kondite/kondite.module';
@@ -16,13 +16,15 @@ import { BeritaAcaraSumpahEntity } from './kondite/entity/berita-acara-sumpah.en
 import { SuratPernyataanJumlahAktaNotarisEntity } from './kondite/entity/surat-pernyataan-jumlah-akta-notaris.entity';
 import { SuratPernyataanPemegangProtokolEntity } from './kondite/entity/surat-pernyataan-pemegang-protokol.entity';
 import * as dotenv from 'dotenv';
+import { RolesGuard } from './role/role.guard';
 
 dotenv.config();
 
 @Module({
   imports: [
     AuthModule, 
-    TodoModule,
+    KonditeModule,
+    // TodoModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
@@ -39,7 +41,8 @@ dotenv.config();
         SuratPernyataanPemegangProtokolEntity
       ],
       // set to true in the new database, set false, to existing database
-      synchronize: process.env.SYNCHRONIZE === 'true',
+      synchronize: process.env.DB_SYNCHRONIZE === 'true',
+      // synchronize:true
     }),
     NestMinioModule.register(
       // isGlobal: true,
@@ -50,7 +53,7 @@ dotenv.config();
         accessKey: process.env.MINIO_ACCESS_KEY,
         secretKey: process.env.MINIO_SECRET_KEY,
     }),
-    KonditeModule,
+    
   ],
   controllers: [AppController],
   providers: [
@@ -59,11 +62,15 @@ dotenv.config();
       provide: APP_FILTER,
       useClass: CustomExceptionFilter,
     },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
   ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JsonHeaderMiddleware).forRoutes('*')
+    consumer.apply(JwtMiddleware).forRoutes('api/kondite')
   }
 }
 

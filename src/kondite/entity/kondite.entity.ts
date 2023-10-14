@@ -30,4 +30,7 @@ export class KonditeEntity {
   @OneToOne(() => SuratPernyataanPemegangProtokolEntity, { cascade: true, eager: true })
   @JoinColumn()
   suratPernyataanPemegangProtokol: SuratPernyataanPemegangProtokolEntity;
+
+  @Column()
+  userId: string;
 }

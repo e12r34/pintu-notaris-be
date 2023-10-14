@@ -24,16 +24,5 @@ export class User {
   isactive: boolean;
 }
 
-export class RegisterDto {
-  message: string;
-  data: RegisterDataDto
-}
 
-export class RegisterDataDto {
-  id: string;
-  name: string;
-  username: string;
-  role: string;
-  isActive: boolean;
-}
 
