@@ -1,10 +1,14 @@
-import { Controller, Post, Body, Res, Req, Get, Param, Put, Delete, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, Res, Req, Get, Param, Put, Delete, NotFoundException, BadRequestException, UnauthorizedException, Inject, Query } from '@nestjs/common';
 import { KonditeEntity } from './entity/kondite.entity';
 import { Response, Request } from 'express';
 import { KonditeService } from './kondite.service';
 import { Roles } from 'src/role/role.decorator';
 import { Role } from 'src/role/role.enum';
 import { ApiBearerAuth } from '@nestjs/swagger/dist';
+import { generateCacheKey } from './kondite.function';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { DtoKonditeFindAllRequest, DtoKonditeFindAllResponse } from './kondite.dto';
 
 @ApiBearerAuth()
 @Controller('api/kondite')
@@ -13,7 +17,9 @@ export class KonditeController {
     userId:string;
     constructor(
         private readonly konditeService: KonditeService,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache
       ) {}
+
 
     @Post()
     @Roles(Role.Notaris)
@@ -24,6 +30,7 @@ export class KonditeController {
         )
     {
         try{
+             // Cache the result
             this.userId=req.user['id']
             if (!this.userId) {
                 throw new UnauthorizedException('No user id found');
@@ -34,6 +41,7 @@ export class KonditeController {
             {
                 throw new BadRequestException('Invalid data received');
             }
+            await this.cacheManager.set(generateCacheKey(this.userId, createdKondite.id), createdKondite);
             res.json(createdKondite)
         }
         catch(error){
@@ -45,15 +53,30 @@ export class KonditeController {
     @Roles(Role.Notaris)
     async getAllKondite(
         @Res() res: Response,
-        @Req() req: Request)
+        @Req() req: Request,
+        @Query('pageIndex') pageIndex: number = 1,
+        @Query('pageSize') pageSize: number = 10,
+        @Query('stringPencarian') stringPencarian?: string,
+        @Query('sortBy') sortBy?: string,)
     {
         try{
+            const body: DtoKonditeFindAllRequest={
+                pageIndex:pageIndex,
+                pageSize:pageSize,
+                stringPencarian:stringPencarian,
+                sortBy:sortBy
+            }
+            const cachedKonditeEntries = await this.cacheManager.get<DtoKonditeFindAllResponse[]>(generateCacheKey(this.userId,null,body));
+            if (cachedKonditeEntries) {
+                return res.json(cachedKonditeEntries);
+            }
             this.userId=req.user['id']
             if (!this.userId) {
                 throw new UnauthorizedException('No user id found');
             }
-            const konditeEntries = await this.konditeService.findAll(this.userId);
+            const konditeEntries = await this.konditeService.findAll(this.userId,body);
             res.json(konditeEntries);
+            await this.cacheManager.set(generateCacheKey(this.userId,null,body), konditeEntries);
         }
         catch(error){
             throw error;
@@ -72,10 +95,18 @@ export class KonditeController {
             if (!this.userId) {
                 throw new UnauthorizedException('No user id found');
             }
+
+            //caching
+            const cachedKonditeEntries = await this.cacheManager.get<KonditeEntity[]>(generateCacheKey(this.userId, id));
+            if (cachedKonditeEntries) {
+                return res.json(cachedKonditeEntries);
+            }
+            //todb
             const konditeEntries = await this.konditeService.findOne(id, this.userId);
             if (!konditeEntries) {
                 throw new NotFoundException("Data Not Found")
             }
+            await this.cacheManager.set(generateCacheKey(this.userId, konditeEntries.id), konditeEntries);
             res.json(konditeEntries);
         }
         catch(error){
@@ -97,6 +128,7 @@ export class KonditeController {
                 throw new UnauthorizedException('No user id found');
             }
             const updatedKondite = await this.konditeService.update(id, updateKonditeDto, this.userId);
+            await this.cacheManager.set(generateCacheKey(this.userId, updateKonditeDto.id), updateKonditeDto);
             res.json(updatedKondite);
         }
         catch(err){

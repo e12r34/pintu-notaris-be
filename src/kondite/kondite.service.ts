@@ -5,11 +5,14 @@ import { Repository } from 'typeorm';
 import { InjectMinio } from 'nestjs-minio';
 import config from 'src/config';
 import * as uuid from 'uuid';
+import { DtoKonditeFindAllRequest, DtoKonditeFindAllResponse } from './kondite.dto';
+import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class KonditeService {
     constructor(
         @InjectRepository(KonditeEntity) private konditeRepository: Repository<KonditeEntity>,
+        @InjectRepository(User) private userRepository: Repository<User>,
         @InjectMinio() private readonly minioClient,
       ) {}
       
@@ -99,91 +102,7 @@ export class KonditeService {
       return await this.konditeRepository.save(kondite);
     }
 
-
-    async findAll(userId: string): Promise<KonditeEntity[]> {
-      const records = await this.konditeRepository.find({
-        where: {
-          userId
-        },
-        relations: ['skPengangkatanPindah', 'beritaAcaraSumpah', 'suratPernyataanJumlahAktaNotaris', 'suratPernyataanPemegangProtokol'],
-      });
-      if (records.length===0) {
-        throw new NotFoundException('Records Kondite Not found')
-      }
-
-      records.forEach(async record => {
-        if (record.beritaAcaraSumpah.file!="") {
-          try {
-            const result = await this.downloadAndEncodeFile(record.beritaAcaraSumpah.file);
-            if (result) {
-              // Send the JSON object as a response
-              record.beritaAcaraSumpah.file=result.content
-            } else {
-              // Handle the case where the file doesn't exist or there's an error
-              throw new NotFoundException('File not found');
-            }
-          } catch (error) {
-            throw error;
-          }
-        }
-  
-        if (record.skPengangkatanPindah.file!="") {
-          try {
-            const result = await this.downloadAndEncodeFile(record.skPengangkatanPindah.file);
-            if (result) {
-              // Send the JSON object as a response
-              record.skPengangkatanPindah.file=result.content
-            } else {
-              // Handle the case where the file doesn't exist or there's an error
-              throw new NotFoundException('File not found');
-            }
-          } catch (error) {
-            throw error;
-          }
-        }
-  
-        if (record.suratPernyataanJumlahAktaNotaris.file!="") {
-          try {
-            const result = await this.downloadAndEncodeFile(record.suratPernyataanJumlahAktaNotaris.file);
-            if (result) {
-              // Send the JSON object as a response
-              record.suratPernyataanJumlahAktaNotaris.file=result.content
-            } else {
-              // Handle the case where the file doesn't exist or there's an error
-              throw new NotFoundException('File not found');
-            }
-          } catch (error) {
-            throw error;
-          }
-        }
-  
-        if (record.suratPernyataanPemegangProtokol.file!="") {
-          try {
-            const result = await this.downloadAndEncodeFile(record.suratPernyataanPemegangProtokol.file);
-            if (result) {
-              // Send the JSON object as a response
-              record.suratPernyataanPemegangProtokol.file=result.content
-            } else {
-              // Handle the case where the file doesn't exist or there's an error
-              throw new NotFoundException('File not found');
-            }
-          } catch (error) {
-            throw error;
-          }
-        }
-      });
-
-      return records
-    }
-
-    async findOne(id: string, userId: string): Promise<KonditeEntity> {
-      const record= await this.konditeRepository.findOne({
-        where: { id, userId },
-        relations: ['skPengangkatanPindah', 'beritaAcaraSumpah', 'suratPernyataanJumlahAktaNotaris', 'suratPernyataanPemegangProtokol'],
-      });
-      if (!record) {
-        throw new NotFoundException('Record Kondite Not found');
-      }
+    async Download(record: KonditeEntity){
       if (record.beritaAcaraSumpah.file!="") {
         try {
           const result = await this.downloadAndEncodeFile(record.beritaAcaraSumpah.file);
@@ -241,6 +160,65 @@ export class KonditeService {
         }
       }
       return record
+    }
+
+    async findAll(userId: string, body: DtoKonditeFindAllRequest): Promise<DtoKonditeFindAllResponse[]> {
+      const skip = (body.pageIndex - 1) * body.pageSize;
+      const records:any = await this.konditeRepository.find({
+        where: {
+          userId
+        },
+        // relations: ['skPengangkatanPindah', 'beritaAcaraSumpah', 'suratPernyataanJumlahAktaNotaris', 'suratPernyataanPemegangProtokol'],
+        select: {
+          id: true,
+          jenisLayanan: true,
+          tanggalPermohonan: true,
+          nomorPermohonan: true,
+          statusPermohonan: true,
+          userId: true,
+        },
+        take: body.pageSize,
+        skip: skip,
+      });
+      if (records.length===0) {
+        throw new NotFoundException('Records Kondite Not found')
+      }
+
+      var namaNotaris:any={}
+      var keluaran: DtoKonditeFindAllResponse[]=[]
+      records.forEach(async record => {
+        if (namaNotaris.hasOwnProperty(record.userId) ) {
+          record['namaNotaris']=namaNotaris[record.userId]
+        }
+        else{
+          const chosenUsername = await this.userRepository.findOne({
+            where:{
+              id: record.userId
+            },
+            select:{
+              nama: true,
+            }
+          })
+          namaNotaris[record.userId]=chosenUsername
+        }
+        delete record.userId
+        keluaran.push(record)
+        
+      });
+
+      return keluaran
+    }
+
+    async findOne(id: string, userId: string): Promise<KonditeEntity> {
+      const record= await this.konditeRepository.findOne({
+        where: { id, userId },
+        relations: ['skPengangkatanPindah', 'beritaAcaraSumpah', 'suratPernyataanJumlahAktaNotaris', 'suratPernyataanPemegangProtokol'],
+      });
+      if (!record) {
+        throw new NotFoundException('Record Kondite Not found');
+      }
+      const new_record = await this.Download(record);
+      return new_record
     }
 
 

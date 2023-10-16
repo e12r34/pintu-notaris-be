@@ -6,7 +6,7 @@ export class SkPengangkatanPindahEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column()
   nomorSurat: string;
 
   @Column({ type: 'date' })

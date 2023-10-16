@@ -6,7 +6,7 @@ export class SuratPernyataanJumlahAktaNotarisEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column()
   nomorSurat: string;
 
   @Column({ type: 'date' })

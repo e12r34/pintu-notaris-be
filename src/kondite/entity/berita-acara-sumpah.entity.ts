@@ -9,7 +9,7 @@ export class BeritaAcaraSumpahEntity {
   @Column({ unique: true })
   nomorSurat: string;
 
-  @Column({ type: 'date' })
+  @Column()
   tanggalSurat: Date;
 
   @Column()

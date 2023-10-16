@@ -1,24 +1,18 @@
 import { Module } from '@nestjs/common';
-import { KonditeController } from './kondite.controller';
-import { KonditeService } from './kondite.service';
+import { CutiService } from './cuti.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { KonditeEntity } from './entity/kondite.entity';
 import { CacheModule } from '@nestjs/cache-manager';
+import { CutiEntity } from './entity/cuti.entity';
 import { redisStore } from 'cache-manager-redis-store';
-import { User } from 'src/auth/user.entity';
+import { CutiController } from './cuti.controller';
 import * as dotenv  from 'dotenv';
 
 dotenv.config();
-
 @Module({
-    controllers:[
-        KonditeController
-    ],
-    providers:[
-        KonditeService
-    ],
-    imports:[
-        TypeOrmModule.forFeature([KonditeEntity, User]),
+  providers: [CutiService],
+  controllers:[CutiController],
+  imports:[
+    TypeOrmModule.forFeature([CutiEntity]),
         CacheModule.register({
             // @ts-ignore
             store: async () => await redisStore({
@@ -33,6 +27,6 @@ dotenv.config();
             
             )
           }),
-    ]
+  ]
 })
-export class KonditeModule {}
+export class CutiModule {}
