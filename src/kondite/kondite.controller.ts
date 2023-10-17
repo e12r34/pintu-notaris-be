@@ -4,13 +4,14 @@ import { Response, Request } from 'express';
 import { KonditeService } from './kondite.service';
 import { Roles } from 'src/role/role.decorator';
 import { Role } from 'src/role/role.enum';
-import { ApiBearerAuth } from '@nestjs/swagger/dist';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { generateCacheKey } from './kondite.function';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { DtoKonditeFindAllRequest, DtoKonditeFindAllResponse } from './kondite.dto';
 
 @ApiBearerAuth()
+@ApiTags('Kondite')
 @Controller('api/kondite')
 export class KonditeController {
 
@@ -51,6 +52,10 @@ export class KonditeController {
 
     @Get()
     @Roles(Role.Notaris)
+    @ApiQuery({ name: 'pageIndex', type: Number, required: false, description: 'Page Index' })
+    @ApiQuery({ name: 'pageSize', type: Number, required: false, description: 'Page Size' })
+    @ApiQuery({ name: 'stringPencarian', type: String, required: false, description: 'string yang akan dicari' })
+    @ApiQuery({ name: 'sortBy', type: String, required: false, description: 'di sort dari field apa' })
     async getAllKondite(
         @Res() res: Response,
         @Req() req: Request,
