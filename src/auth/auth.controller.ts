@@ -2,42 +2,49 @@ import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDataDto, RegisterResponseDto, LoginDto, LoginResultDto, refreshDto, RegisterRequestDto } from './auth.dto';
 import { User } from './user.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
-    
-  @Post('register')
-  async register(@Body() userData: RegisterRequestDto): Promise<RegisterResponseDto> {
-    try{
-        const user = new User();
-        user.nama = userData.nama;
-        user.username = userData.username;
-        user.password = userData.password; // Hash the password before saving
-        user.role = userData.role.join(',');
-        user.isactive = true;
-        const createdUser = await this.authService.create(user)
-        const userDataResponse: RegisterDataDto = {
-            id: createdUser.id,
-            name: createdUser.nama,
-            username: createdUser.username,
-            role: createdUser.role.split(','),
-            isActive: createdUser.isactive,
-        };
-        return {
-            message: "Register Success",
-            data: userDataResponse,
+    @ApiBody({
+        type: RegisterRequestDto, // Specify the DTO class representing the request body
+        description: 'Untuk merefresh acces token', // Description of the request body
+        })
+    @Post('register')
+    async register(@Body() userData: RegisterRequestDto): Promise<RegisterResponseDto> {
+        try{
+            const user = new User();
+            user.nama = userData.nama;
+            user.username = userData.username;
+            user.password = userData.password; // Hash the password before saving
+            user.role = userData.role.join(',');
+            user.isactive = true;
+            const createdUser = await this.authService.create(user)
+            const userDataResponse: RegisterDataDto = {
+                id: createdUser.id,
+                name: createdUser.nama,
+                username: createdUser.username,
+                role: createdUser.role.split(','),
+                isActive: createdUser.isactive,
+            };
+            return {
+                message: "Register Success",
+                data: userDataResponse,
+            }
+            
+        } catch (error){
+            throw error;
         }
         
-    } catch (error){
-          throw error;
     }
-    
-  }
 
+    @ApiBody({
+        type: LoginDto, // Specify the DTO class representing the request body
+        description: 'Login untuk mendapatkan access dan refresh token', // Description of the request body
+    })
     @Post('login')
     async login(@Body() loginDto: LoginDto ) : Promise<LoginResultDto> {
         const username=loginDto.username
@@ -53,6 +60,10 @@ export class AuthController {
         }
     }
 
+    @ApiBody({
+        type: refreshDto, // Specify the DTO class representing the request body
+        description: 'Untuk merefresh acces token', // Description of the request body
+        })
     @Post('refresh-token')
     async refreshToken(@Body() refreshDto: refreshDto ) : Promise<LoginResultDto> {
         if (!refreshDto.refreshToken) {

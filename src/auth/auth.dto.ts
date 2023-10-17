@@ -1,6 +1,11 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export class LoginDto {
-    username: string;
-    password: string;    
+  @ApiProperty({ example: 'username', description: 'Username' })
+  username: string;
+
+  @ApiProperty({ example: 'Password', description: 'Password' })
+  password: string;    
   }
 
 export class LoginResultDto{
@@ -10,13 +15,18 @@ export class LoginResultDto{
 }
 
 export class refreshDto{
+  @ApiProperty({ example: 'refreshToken', description: 'Refresh Token' })
   refreshToken: string;
 }
 
 export class RegisterRequestDto{
+  @ApiProperty({ example: 'nama', description: 'Nama Akun/Notaris/User' })
   nama: string;
+  @ApiProperty({ example: 'username', description: 'Username untuk login' })
   username: string;  
+  @ApiProperty({ example: 'password', description: 'Password untuk login' })
   password: string;
+  @ApiProperty({ example: ['role1','role2'], description: 'Role yang di assign' })
   role: string[];
 }
 
