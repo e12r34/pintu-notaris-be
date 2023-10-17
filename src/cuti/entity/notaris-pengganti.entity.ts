@@ -29,7 +29,7 @@ export class NotarisPenggantiEntity {
     fileRiwayatHidup: string;
 
     @Column()
-    fileKeteranganBekerja: string;
+    fileKeteranganBerkerja: string;
 
     @OneToOne(() => CutiEntity, (cuti) => cuti.skPengangkatan)
     cuti: CutiEntity;

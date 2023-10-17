@@ -1,19 +1,164 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectMinio } from 'nestjs-minio';
 import { CutiEntity } from './entity/cuti.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DtoCutiRequest } from './cuti.dto';
+import { DtoCutiFindAllRequest, DtoCutiFindAllResponse, DtoCutiRequest } from './cuti.dto';
 import * as uuid from 'uuid';
 import config from 'src/config';
+import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class CutiService {
 
     constructor(
         @InjectRepository(CutiEntity) private cutiRepository: Repository<CutiEntity>,
+        @InjectRepository(User) private userRepository: Repository<User>,
         @InjectMinio() private readonly minioClient,
       ) {}
+
+      async downloadAndEncodeFile(objectName: string): Promise<{ content: string } | null> {
+        try {
+          const bucketName=config.minioBucketName
+          const objectStream = await this.minioClient.getObject(bucketName, objectName);
+          const buffers = [];
+          return new Promise<{ content: string }>((resolve, reject) => {
+            objectStream.on('data', (chunk) => buffers.push(chunk));
+            objectStream.on('end', () => {
+              const fileBuffer = Buffer.concat(buffers);
+              // Encode the file content as base64
+              const base64Content = fileBuffer.toString('base64');
+              // Create a JSON object with the base64 content
+              const jsonResult = { content: base64Content };
+              resolve(jsonResult);
+            });
+            objectStream.on('error', (error) => {
+              reject(error);
+            });
+          });
+        } catch (error) {
+          // Handle any errors that occur during the getObject operation
+          throw error
+        }
+      }
+
+      async Download(record: CutiEntity){
+        if (record.skPengangkatan.file!="") {
+          try {
+            const result = await this.downloadAndEncodeFile(record.skPengangkatan.file);
+            if (result) {
+              // Send the JSON object as a response
+              record.skPengangkatan.file=result.content
+            } else {
+              // Handle the case where the file doesn't exist or there's an error
+              throw new NotFoundException('File not found');
+            }
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.beritaAcara.file!="") {
+          try {
+            const result = await this.downloadAndEncodeFile(record.beritaAcara.file);
+            if (result) {
+              // Send the JSON object as a response
+              record.beritaAcara.file=result.content
+            } else {
+              // Handle the case where the file doesn't exist or there's an error
+              throw new NotFoundException('File not found');
+            }
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.notarisPenggantiSementara.fileFoto!="") {
+          try {
+            const result = await this.downloadAndEncodeFile(record.notarisPenggantiSementara.fileFoto);
+            if (result) {
+              // Send the JSON object as a response
+              record.notarisPenggantiSementara.fileFoto=result.content
+            } else {
+              // Handle the case where the file doesn't exist or there's an error
+              throw new NotFoundException('File not found');
+            }
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.notarisPenggantiSementara.fileKtp!="") {
+          try {
+            const result = await this.downloadAndEncodeFile(record.notarisPenggantiSementara.fileKtp);
+            if (result) {
+              // Send the JSON object as a response
+              record.notarisPenggantiSementara.fileKtp=result.content
+            } else {
+              // Handle the case where the file doesn't exist or there's an error
+              throw new NotFoundException('File not found');
+            }
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.notarisPenggantiSementara.fileIjazah!="") {
+          try {
+            const result = await this.downloadAndEncodeFile(record.notarisPenggantiSementara.fileIjazah);
+            if (result) {
+              // Send the JSON object as a response
+              record.notarisPenggantiSementara.fileIjazah=result.content
+            } else {
+              // Handle the case where the file doesn't exist or there's an error
+              throw new NotFoundException('File not found');
+            }
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.notarisPenggantiSementara.fileSkck!="") {
+          try {
+            const result = await this.downloadAndEncodeFile(record.notarisPenggantiSementara.fileSkck);
+            if (result) {
+              // Send the JSON object as a response
+              record.notarisPenggantiSementara.fileSkck=result.content
+            } else {
+              // Handle the case where the file doesn't exist or there's an error
+              throw new NotFoundException('File not found');
+            }
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.notarisPenggantiSementara.fileRiwayatHidup!="") {
+          try {
+            const result = await this.downloadAndEncodeFile(record.notarisPenggantiSementara.fileRiwayatHidup);
+            if (result) {
+              // Send the JSON object as a response
+              record.notarisPenggantiSementara.fileRiwayatHidup=result.content
+            } else {
+              // Handle the case where the file doesn't exist or there's an error
+              throw new NotFoundException('File not found');
+            }
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.notarisPenggantiSementara.fileKeteranganBerkerja!="") {
+          try {
+            const result = await this.downloadAndEncodeFile(record.notarisPenggantiSementara.fileKeteranganBerkerja);
+            if (result) {
+              // Send the JSON object as a response
+              record.notarisPenggantiSementara.fileKeteranganBerkerja=result.content
+            } else {
+              // Handle the case where the file doesn't exist or there's an error
+              throw new NotFoundException('File not found');
+            }
+          } catch (error) {
+            throw error;
+          }
+        }
+
+
+        return record
+      }
 
       async uploadFile(filePath:string,file:string){
         const bucketName=config.minioBucketName
@@ -39,7 +184,7 @@ export class CutiService {
         cutiData.jangkaWaktu ? newCutiData.jangkaWaktu= cutiData.jangkaWaktu:null
         cutiData.alasanCuti? newCutiData.alasanCuti=cutiData.alasanCuti:null
         if(cutiData.skPengangkatan){
-            if(cutiData.skPengangkatan.file){
+            if(cutiData.skPengangkatan.file!=""){
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/sk-pengangkatan/${uuidv4}.pdf`
                 await this.uploadFile(path,cutiData.skPengangkatan.file)
@@ -49,7 +194,7 @@ export class CutiService {
             cutiData.skPengangkatan.tanggal?newCutiData.skPengangkatan.tanggal=cutiData.skPengangkatan.tanggal:null
         }
         if(cutiData.beritaAcara) {
-            if(cutiData.beritaAcara.file){
+            if(cutiData.beritaAcara.file!=""){
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/berita-acara/${uuidv4}.pdf`
                 await this.uploadFile(path,cutiData.skPengangkatan.file)
@@ -64,14 +209,14 @@ export class CutiService {
         if (cutiData.notarisPenggantiSementara) {
             cutiData.notarisPenggantiSementara.nama?newCutiData.notarisPenggantiSementara.nama=cutiData.notarisPenggantiSementara.nama:null
             cutiData.notarisPenggantiSementara.email?newCutiData.notarisPenggantiSementara.email=cutiData.notarisPenggantiSementara.email:null
-            if (cutiData.notarisPenggantiSementara.fileFoto) {
+            if (cutiData.notarisPenggantiSementara.fileFoto!="") {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-foto/${uuidv4}`
                 await this.uploadFile(path,cutiData.skPengangkatan.file)
                 newCutiData.notarisPenggantiSementara.fileFoto=path
             }
 
-            if (cutiData.notarisPenggantiSementara.fileKtp) {
+            if (cutiData.notarisPenggantiSementara.fileKtp!="") {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-ktp/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileKtp)
@@ -79,32 +224,32 @@ export class CutiService {
 
             }
 
-            if (cutiData.notarisPenggantiSementara.fileIjazah) {
+            if (cutiData.notarisPenggantiSementara.fileIjazah!="") {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-ijazah/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileIjazah)
                 newCutiData.notarisPenggantiSementara.fileIjazah=path
             }
 
-            if (cutiData.notarisPenggantiSementara.fileSkck) {
+            if (cutiData.notarisPenggantiSementara.fileSkck!="") {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-skck/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileSkck)
                 newCutiData.notarisPenggantiSementara.fileSkck=path
             }
 
-            if (cutiData.notarisPenggantiSementara.fileRiwayatHidup) {
+            if (cutiData.notarisPenggantiSementara.fileRiwayatHidup!="") {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-riwayat-hidup/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileRiwayatHidup)
                 newCutiData.notarisPenggantiSementara.fileRiwayatHidup=path
             }
 
-            if (cutiData.notarisPenggantiSementara.fileKeteranganBerkerja) {
+            if (cutiData.notarisPenggantiSementara.fileKeteranganBerkerja!="") {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-keterangan-bekerja/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileKeteranganBerkerja)
-                newCutiData.notarisPenggantiSementara.fileKeteranganBekerja=path
+                newCutiData.notarisPenggantiSementara.fileKeteranganBerkerja=path
             }
         }
         if (cutiData.notarisPemegangProtokol) {
@@ -116,5 +261,64 @@ export class CutiService {
 
         const cuti = this.cutiRepository.create(newCutiData);
         return await this.cutiRepository.save(cuti);
+      }
+
+      async findOne(id: string, userId: string): Promise<CutiEntity> {
+        const record:any= await this.cutiRepository.findOne({
+          where: { id, userId },
+          relations: ['skPengangkatan', 'beritaAcara', 'notarisPenggantiSementara', 'notarisPemegangProtokol'],
+        });
+        if (!record) {
+          throw new NotFoundException('Record Cuti Not found');
+        }
+        const new_record = await this.Download(record);
+        return new_record
+      }
+
+      async findAll(userId: string, body: DtoCutiFindAllRequest): Promise<DtoCutiFindAllResponse[]> {
+        const skip = (body.pageIndex - 1) * body.pageSize;
+        const records:any = await this.cutiRepository.find({
+          where: {
+            userId
+          },
+          // relations: ['skPengangkatanPindah', 'beritaAcaraSumpah', 'suratPernyataanJumlahAktaNotaris', 'suratPernyataanPemegangProtokol'],
+          select: {
+            id: true,
+            jenisLayanan: true,
+            tanggalPermohonan: true,
+            nomorPermohonan: true,
+            statusPermohonan: true,
+            userId: true,
+          },
+          take: body.pageSize,
+          skip: skip,
+        });
+        if (records.length===0) {
+          throw new NotFoundException('Records Cuti Not found')
+        }
+  
+        var namaNotaris:any={}
+        var keluaran: DtoCutiFindAllResponse[]=[]
+        records.forEach(async record => {
+          if (namaNotaris.hasOwnProperty(record.userId) ) {
+            record['namaNotaris']=namaNotaris[record.userId]
+          }
+          else{
+            const chosenUsername = await this.userRepository.findOne({
+              where:{
+                id: record.userId
+              },
+              select:{
+                nama: true,
+              }
+            })
+            namaNotaris[record.userId]=chosenUsername
+          }
+          delete record.userId
+          keluaran.push(record)
+          
+        });
+  
+        return keluaran
       }
 }

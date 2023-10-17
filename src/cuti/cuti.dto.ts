@@ -30,3 +30,19 @@ export class DtoCutiRequest  {
     }
     voucherSimpadhu: string;
 }
+
+export class DtoCutiFindAllRequest{
+    pageIndex?:number
+    pageSize?:number
+    stringPencarian?:any;
+    sortBy?:any;
+}
+
+export class DtoCutiFindAllResponse{
+    id:string;
+    nomorPermohonan:string;
+    namaNotaris:string;
+    jenisLayanan:string;
+    tanggalPermohonan:Date;
+    statusPermohonan:number;
+}

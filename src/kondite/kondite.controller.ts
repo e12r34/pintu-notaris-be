@@ -76,7 +76,7 @@ export class KonditeController {
             }
             const konditeEntries = await this.konditeService.findAll(this.userId,body);
             res.json(konditeEntries);
-            await this.cacheManager.set(generateCacheKey(this.userId,null,body), konditeEntries);
+            await this.cacheManager.set(generateCacheKey(this.userId,null,body), konditeEntries, 120);
         }
         catch(error){
             throw error;
@@ -97,7 +97,7 @@ export class KonditeController {
             }
 
             //caching
-            const cachedKonditeEntries = await this.cacheManager.get<KonditeEntity[]>(generateCacheKey(this.userId, id));
+            const cachedKonditeEntries = await this.cacheManager.get<KonditeEntity>(generateCacheKey(this.userId, id));
             if (cachedKonditeEntries) {
                 return res.json(cachedKonditeEntries);
             }
