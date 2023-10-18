@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException, Delete } from '@nestjs/common';
 import { InjectMinio } from 'nestjs-minio';
 import { CutiEntity } from './entity/cuti.entity';
-import { Repository } from 'typeorm';
+import { Repository, getRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DtoCutiFindAllRequest, DtoCutiFindAllResponse, DtoCutiFindAllResponseData, DtoCutiRequest } from './cuti.dto';
 import * as uuid from 'uuid';
@@ -11,6 +11,10 @@ import { CutiSkPengangkatanPindahEntity } from './entity/cuti-sk-pengangkatan.en
 import { CutiBeritaAcaraEntity } from './entity/cuti-berita-acara.entity';
 import { NotarisPenggantiEntity } from './entity/notaris-pengganti.entity';
 import { NotarisPemegangProtokolEntity } from './entity/notaris-pemegang-protokol.entity';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
 
 @Injectable()
 export class CutiService {
@@ -329,6 +333,19 @@ export class CutiService {
         cutiData.voucherSimpadhu?newCutiData.voucherSimpadhu=cutiData.voucherSimpadhu:null
         newCutiData.userId=userId
 
+        const latestRecord = await getRepository(CutiEntity)
+          .createQueryBuilder('cuti')
+          .orderBy('cuti.tanggalPermohonan', 'DESC')
+          .getOne();
+        if (latestRecord) {
+          const pisah = latestRecord.nomorPermohonan.split("-")
+          const new_number=pisah[pisah.length-1]+1
+          newCutiData.nomorPermohonan=`${process.env.APP_FORMAT_NOMOR_CUTI}${new_number}`
+        }
+        else{
+          newCutiData.nomorPermohonan=`${process.env.APP_FORMAT_NOMOR_CUTI}1`
+        }
+
         const cuti = this.cutiRepository.create(newCutiData);
         cutiData.skPengangkatan.file?cuti.skPengangkatan.file=cutiData.skPengangkatan.file:null
         cutiData.beritaAcara.file?cuti.beritaAcara.file=cutiData.beritaAcara.file:null
@@ -339,7 +356,8 @@ export class CutiService {
         cutiData.notarisPenggantiSementara.fileSkck?cuti.notarisPenggantiSementara.fileSkck=cutiData.notarisPenggantiSementara.fileSkck:null
         cutiData.notarisPenggantiSementara.fileKeteranganBerkerja?cuti.notarisPenggantiSementara.fileKeteranganBerkerja=cutiData.notarisPenggantiSementara.fileKeteranganBerkerja:null
         
-        return  await this.cutiRepository.save(cuti);
+        await this.cutiRepository.save(cuti);
+        return cuti
         
       }
 
