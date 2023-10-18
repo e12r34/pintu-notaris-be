@@ -12,7 +12,6 @@ function now():string {
 @Entity('Cuti') // Make sure the name matches your table name in the database
 export class CutiEntity {
 
-
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -64,4 +63,5 @@ export class CutiEntity {
   @OneToOne(() => NotarisPemegangProtokolEntity, { cascade: true, eager: true })
   @JoinColumn()
   notarisPemegangProtokol: NotarisPemegangProtokolEntity
+  newCutiData: {};
 }

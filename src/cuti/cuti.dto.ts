@@ -4,12 +4,15 @@ export class DtoCutiRequest  {
     @ApiProperty({ example: '2023-10-13 00:00:00', description: 'Tanggal Mulai Cuti' })
     tanggalMulai: Date;
     
-    @ApiProperty({ example: '2', description: 'Berapa lama cutinya (dalam bulan)' })
+    @ApiProperty({ example: 2, description: 'Berapa lama cutinya (dalam bulan)' })
     jangkaWaktu: number;
     
-    @ApiProperty({ example: '1', description: 'Alasan Cuti Berdasarkan Katalog' })
+    @ApiProperty({ example: 1, description: 'Alasan Cuti Berdasarkan Katalog' })
     alasanCuti: number;
     
+    @ApiProperty({ example: 1, description: 'jenisLayanan Cuti' })
+    jenisLayanan:number;
+
     @ApiProperty({ example: {file:"base64 File", nomor:"29/SK/02/2022",tanggal:'2023-10-13 00:00:00'}, description: 'File SK, Nomor SK, dan tanggal SK' })
     skPengangkatan: {
         file: string;

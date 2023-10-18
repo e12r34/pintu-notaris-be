@@ -7,6 +7,10 @@ import { DtoCutiFindAllRequest, DtoCutiFindAllResponse, DtoCutiRequest } from '.
 import * as uuid from 'uuid';
 import config from 'src/config';
 import { User } from 'src/auth/user.entity';
+import { CutiSkPengangkatanPindahEntity } from './entity/cuti-sk-pengangkatan.entity';
+import { CutiBeritaAcaraEntity } from './entity/cuti-berita-acara.entity';
+import { NotarisPenggantiEntity } from './entity/notaris-pengganti.entity';
+import { NotarisPemegangProtokolEntity } from './entity/notaris-pemegang-protokol.entity';
 
 @Injectable()
 export class CutiService {
@@ -243,17 +247,21 @@ export class CutiService {
         cutiData.tanggalMulai ? newCutiData.tanggalMulai= cutiData.tanggalMulai:null
         cutiData.jangkaWaktu ? newCutiData.jangkaWaktu= cutiData.jangkaWaktu:null
         cutiData.alasanCuti? newCutiData.alasanCuti=cutiData.alasanCuti:null
+        cutiData.jenisLayanan? newCutiData.jenisLayanan=cutiData.jenisLayanan:null
         if(cutiData.skPengangkatan){
+            newCutiData.skPengangkatan= new CutiSkPengangkatanPindahEntity()
             if(cutiData.skPengangkatan.file!=""){
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/sk-pengangkatan/${uuidv4}.pdf`
                 await this.uploadFile(path,cutiData.skPengangkatan.file)
-                newCutiData.skPengangkatan.file=path
+                
+                newCutiData.skPengangkatan['file']=path
             }
             cutiData.skPengangkatan.nomor?newCutiData.skPengangkatan.nomor=cutiData.skPengangkatan.nomor:null
             cutiData.skPengangkatan.tanggal?newCutiData.skPengangkatan.tanggal=cutiData.skPengangkatan.tanggal:null
         }
         if(cutiData.beritaAcara) {
+            newCutiData.beritaAcara =  new CutiBeritaAcaraEntity()
             if(cutiData.beritaAcara.file!=""){
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/berita-acara/${uuidv4}.pdf`
@@ -267,12 +275,13 @@ export class CutiService {
         cutiData.fileSertifikatCuti?newCutiData.fileSertifikatCuti=cutiData.fileSertifikatCuti:null
         cutiData.fileSkPejabatNegara?newCutiData.fileSkPejabatNegara=cutiData.fileSkPejabatNegara:null
         if (cutiData.notarisPenggantiSementara) {
+          newCutiData.notarisPenggantiSementara= new NotarisPenggantiEntity()
             cutiData.notarisPenggantiSementara.nama?newCutiData.notarisPenggantiSementara.nama=cutiData.notarisPenggantiSementara.nama:null
             cutiData.notarisPenggantiSementara.email?newCutiData.notarisPenggantiSementara.email=cutiData.notarisPenggantiSementara.email:null
             if (cutiData.notarisPenggantiSementara.fileFoto!="") {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-foto/${uuidv4}`
-                await this.uploadFile(path,cutiData.skPengangkatan.file)
+                await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileFoto)
                 newCutiData.notarisPenggantiSementara.fileFoto=path
             }
 
@@ -280,7 +289,7 @@ export class CutiService {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-ktp/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileKtp)
-                newCutiData.notarisPenggantiSementara.fileFoto=path
+                newCutiData.notarisPenggantiSementara.fileKtp=path
 
             }
 
@@ -313,6 +322,7 @@ export class CutiService {
             }
         }
         if (cutiData.notarisPemegangProtokol) {
+          newCutiData.notarisPemegangProtokol=new NotarisPemegangProtokolEntity()
             cutiData.notarisPemegangProtokol.nama?newCutiData.notarisPemegangProtokol.nama=cutiData.notarisPemegangProtokol.nama:null
             cutiData.notarisPemegangProtokol.alamat?newCutiData.notarisPemegangProtokol.alamat=cutiData.notarisPemegangProtokol.alamat:null
         }
@@ -397,17 +407,22 @@ export class CutiService {
         cutiData.tanggalMulai ? newCutiData.tanggalMulai= cutiData.tanggalMulai:null
         cutiData.jangkaWaktu ? newCutiData.jangkaWaktu= cutiData.jangkaWaktu:null
         cutiData.alasanCuti? newCutiData.alasanCuti=cutiData.alasanCuti:null
+        cutiData.jenisLayanan? newCutiData.jenisLayanan=cutiData.jenisLayanan:null
+        
         if(cutiData.skPengangkatan){
+            newCutiData.skPengangkatan= new CutiSkPengangkatanPindahEntity()
             if(cutiData.skPengangkatan.file!=""){
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/sk-pengangkatan/${uuidv4}.pdf`
                 await this.uploadFile(path,cutiData.skPengangkatan.file)
-                newCutiData.skPengangkatan.file=path
+                
+                newCutiData.skPengangkatan['file']=path
             }
             cutiData.skPengangkatan.nomor?newCutiData.skPengangkatan.nomor=cutiData.skPengangkatan.nomor:null
             cutiData.skPengangkatan.tanggal?newCutiData.skPengangkatan.tanggal=cutiData.skPengangkatan.tanggal:null
         }
         if(cutiData.beritaAcara) {
+            newCutiData.beritaAcara =  new CutiBeritaAcaraEntity()
             if(cutiData.beritaAcara.file!=""){
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/berita-acara/${uuidv4}.pdf`
@@ -421,12 +436,13 @@ export class CutiService {
         cutiData.fileSertifikatCuti?newCutiData.fileSertifikatCuti=cutiData.fileSertifikatCuti:null
         cutiData.fileSkPejabatNegara?newCutiData.fileSkPejabatNegara=cutiData.fileSkPejabatNegara:null
         if (cutiData.notarisPenggantiSementara) {
+          newCutiData.notarisPenggantiSementara= new NotarisPenggantiEntity()
             cutiData.notarisPenggantiSementara.nama?newCutiData.notarisPenggantiSementara.nama=cutiData.notarisPenggantiSementara.nama:null
             cutiData.notarisPenggantiSementara.email?newCutiData.notarisPenggantiSementara.email=cutiData.notarisPenggantiSementara.email:null
             if (cutiData.notarisPenggantiSementara.fileFoto!="") {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-foto/${uuidv4}`
-                await this.uploadFile(path,cutiData.skPengangkatan.file)
+                await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileFoto)
                 newCutiData.notarisPenggantiSementara.fileFoto=path
             }
 
@@ -434,7 +450,8 @@ export class CutiService {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-ktp/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileKtp)
-                newCutiData.notarisPenggantiSementara.fileFoto=path
+                newCutiData.notarisPenggantiSementara.fileKtp=path
+
             }
 
             if (cutiData.notarisPenggantiSementara.fileIjazah!="") {
@@ -466,11 +483,13 @@ export class CutiService {
             }
         }
         if (cutiData.notarisPemegangProtokol) {
+          newCutiData.notarisPemegangProtokol=new NotarisPemegangProtokolEntity()
             cutiData.notarisPemegangProtokol.nama?newCutiData.notarisPemegangProtokol.nama=cutiData.notarisPemegangProtokol.nama:null
             cutiData.notarisPemegangProtokol.alamat?newCutiData.notarisPemegangProtokol.alamat=cutiData.notarisPemegangProtokol.alamat:null
         }
         cutiData.voucherSimpadhu?newCutiData.voucherSimpadhu=cutiData.voucherSimpadhu:null
         newCutiData.userId=userId
+
         await this.cutiRepository.update(id, newCutiData);
         return this.findOne(id, userId);
       }
