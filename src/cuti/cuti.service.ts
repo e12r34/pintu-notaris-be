@@ -47,7 +47,6 @@ export class CutiService {
       }
 
       async Download(record: CutiEntity){
-        console.log("Downloading")
         if (record.skPengangkatan.file!="") {
           try {
             const result = await this.downloadAndEncodeFile(record.skPengangkatan.file);
@@ -354,7 +353,7 @@ export class CutiService {
         }
       }
 
-      async findOne(id: string, userId: string): Promise<CutiEntity> {
+      async findOne(id: string, userId: string, isGetFile: Boolean=true): Promise<CutiEntity> {
         const record:any= await this.cutiRepository.findOne({
           where: { id, userId },
           relations: ['skPengangkatan', 'beritaAcara', 'notarisPenggantiSementara', 'notarisPemegangProtokol'],
@@ -362,8 +361,15 @@ export class CutiService {
         if (!record) {
           throw new NotFoundException('Record Cuti Not found');
         }
-        const new_record = await this.Download(record);
-        return new_record
+
+        if (isGetFile) {
+          const new_record = await this.Download(record);
+          return new_record          
+        }
+        else{
+          return record
+        }
+
       }
 
       async findAll(userId: string, body: DtoCutiFindAllRequest): Promise<DtoCutiFindAllResponse> {
@@ -513,7 +519,7 @@ export class CutiService {
       }
 
       async remove(id: string, userId:string): Promise<void> {
-        const existing_record = await this.findOne(id,userId);
+        const existing_record = await this.findOne(id,userId,false);
         this.Delete(existing_record)
         await this.cutiRepository.delete(id);
       }

@@ -26,7 +26,7 @@ export class RegisterRequestDto{
   username: string;  
   @ApiProperty({ example: 'password', description: 'Password untuk login' })
   password: string;
-  @ApiProperty({ example: ['role1','role2'], description: 'Role yang di assign' })
+@ApiProperty({ example: ['role1','role2'], description: 'Role yang di assign' })
   role: string[];
 }
 
