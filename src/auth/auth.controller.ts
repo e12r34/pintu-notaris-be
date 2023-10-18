@@ -11,7 +11,7 @@ export class AuthController {
 
     @ApiBody({
         type: RegisterRequestDto, // Specify the DTO class representing the request body
-        description: 'Untuk merefresh acces token', // Description of the request body
+        description: 'Untuk Registrasi Akun', // Description of the request body
         })
     @Post('register')
     async register(@Body() userData: RegisterRequestDto): Promise<RegisterResponseDto> {

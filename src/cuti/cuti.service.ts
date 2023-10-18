@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, Delete } from '@nestjs/common';
 import { InjectMinio } from 'nestjs-minio';
 import { CutiEntity } from './entity/cuti.entity';
 import { Repository } from 'typeorm';
@@ -160,6 +160,65 @@ export class CutiService {
         return record
       }
 
+      async Delete(record: CutiEntity){
+        if (record.skPengangkatan.file!="") {
+          try {
+            this.deleteFile(record.skPengangkatan.file);
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.beritaAcara.file!="") {
+          try {
+            this.deleteFile(record.beritaAcara.file);
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.notarisPenggantiSementara.fileFoto!="") {
+          try {
+            this.deleteFile(record.notarisPenggantiSementara.fileFoto);
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.notarisPenggantiSementara.fileKtp!="") {
+          try {
+            this.deleteFile(record.notarisPenggantiSementara.fileKtp);
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.notarisPenggantiSementara.fileIjazah!="") {
+          try {
+            this.deleteFile(record.notarisPenggantiSementara.fileIjazah);
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.notarisPenggantiSementara.fileSkck!="") {
+          try {
+            this.deleteFile(record.notarisPenggantiSementara.fileSkck);
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.notarisPenggantiSementara.fileRiwayatHidup!="") {
+          try {
+            this.deleteFile(record.notarisPenggantiSementara.fileRiwayatHidup);
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.notarisPenggantiSementara.fileKeteranganBerkerja!="") {
+          try {
+            this.deleteFile(record.notarisPenggantiSementara.fileKeteranganBerkerja);
+          } catch (error) {
+            throw error;
+          }
+        }
+      }
+
       async uploadFile(filePath:string,file:string){
         const bucketName=config.minioBucketName
         const fileBuffer = Buffer.from(file, 'base64');
@@ -261,6 +320,16 @@ export class CutiService {
 
         const cuti = this.cutiRepository.create(newCutiData);
         return await this.cutiRepository.save(cuti);
+      }
+
+      async deleteFile(filePath:string){
+        try{
+          const bucketName=config.minioBucketName
+          await this.minioClient.removeObject(bucketName, filePath)
+        }
+        catch(err){
+          throw err
+        }
       }
 
       async findOne(id: string, userId: string): Promise<CutiEntity> {
@@ -403,5 +472,11 @@ export class CutiService {
         newCutiData.userId=userId
         await this.cutiRepository.update(id, newCutiData);
         return this.findOne(id, userId);
+      }
+
+      async remove(id: string, userId:string): Promise<void> {
+        const existing_record = await this.findOne(id,userId);
+        this.Delete(existing_record)
+        await this.cutiRepository.delete(id);
       }
 }
