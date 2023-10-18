@@ -1,4 +1,4 @@
-import { Controller, Inject, Post, Body, Req, Res, UnauthorizedException, Param, Get, NotFoundException, Query, Put } from '@nestjs/common';
+import { Controller, Inject, Post, Body, Req, Res, UnauthorizedException, Param, Get, NotFoundException, Query, Put, Delete } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CutiService } from './cuti.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -139,4 +139,24 @@ export class CutiController {
             throw err;
         }
     }  
+
+    @Delete(':id')
+    @Roles(Role.Notaris)
+    async removeKondite(
+        @Res() res: Response,
+        @Req() req: Request,
+        @Param('id') id: string) 
+    {
+        try{
+            this.userId=req.user['id']
+            if (!this.userId) {
+                throw new UnauthorizedException('No user id found');
+            }
+            await this.cutiService.remove(id, this.userId);
+            res.json({ message: 'Cuti entry deleted successfully' })
+        }
+        catch(err){
+            throw err;
+        }
+    }
 }
