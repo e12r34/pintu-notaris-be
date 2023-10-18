@@ -228,6 +228,7 @@ export class CutiService {
         try{
           await this.minioClient.putObject(bucketName,filePath,fileBuffer,metaData,function (err, objInfo) {
             if (err) {
+              console.log(err)
               throw err
             }
           })
