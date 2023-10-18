@@ -47,6 +47,7 @@ export class CutiService {
       }
 
       async Download(record: CutiEntity){
+        console.log("Downloading")
         if (record.skPengangkatan.file!="") {
           try {
             const result = await this.downloadAndEncodeFile(record.skPengangkatan.file);
@@ -330,6 +331,15 @@ export class CutiService {
         newCutiData.userId=userId
 
         const cuti = this.cutiRepository.create(newCutiData);
+        cutiData.skPengangkatan.file?cuti.skPengangkatan.file=cutiData.skPengangkatan.file:null
+        cutiData.beritaAcara.file?cuti.beritaAcara.file=cutiData.beritaAcara.file:null
+        cutiData.notarisPenggantiSementara.fileFoto?cuti.notarisPenggantiSementara.fileFoto=cutiData.notarisPenggantiSementara.fileFoto:null
+        cutiData.notarisPenggantiSementara.fileKtp?cuti.notarisPenggantiSementara.fileKtp=cutiData.notarisPenggantiSementara.fileKtp:null
+        cutiData.notarisPenggantiSementara.fileIjazah?cuti.notarisPenggantiSementara.fileIjazah=cutiData.notarisPenggantiSementara.fileIjazah:null
+        cutiData.notarisPenggantiSementara.fileRiwayatHidup?cuti.notarisPenggantiSementara.fileRiwayatHidup=cutiData.notarisPenggantiSementara.fileRiwayatHidup:null
+        cutiData.notarisPenggantiSementara.fileSkck?cuti.notarisPenggantiSementara.fileSkck=cutiData.notarisPenggantiSementara.fileSkck:null
+        cutiData.notarisPenggantiSementara.fileKeteranganBerkerja?cuti.notarisPenggantiSementara.fileKeteranganBerkerja=cutiData.notarisPenggantiSementara.fileKeteranganBerkerja:null
+        
         return await this.cutiRepository.save(cuti);
       }
 
