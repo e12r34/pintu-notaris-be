@@ -3,7 +3,7 @@ import { InjectMinio } from 'nestjs-minio';
 import { CutiEntity } from './entity/cuti.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DtoCutiFindAllRequest, DtoCutiFindAllResponse, DtoCutiRequest } from './cuti.dto';
+import { DtoCutiFindAllRequest, DtoCutiFindAllResponse, DtoCutiFindAllResponseData, DtoCutiRequest } from './cuti.dto';
 import * as uuid from 'uuid';
 import config from 'src/config';
 import { User } from 'src/auth/user.entity';
@@ -340,7 +340,8 @@ export class CutiService {
         cutiData.notarisPenggantiSementara.fileSkck?cuti.notarisPenggantiSementara.fileSkck=cutiData.notarisPenggantiSementara.fileSkck:null
         cutiData.notarisPenggantiSementara.fileKeteranganBerkerja?cuti.notarisPenggantiSementara.fileKeteranganBerkerja=cutiData.notarisPenggantiSementara.fileKeteranganBerkerja:null
         
-        return await this.cutiRepository.save(cuti);
+        return  await this.cutiRepository.save(cuti);
+        
       }
 
       async deleteFile(filePath:string){
@@ -365,7 +366,7 @@ export class CutiService {
         return new_record
       }
 
-      async findAll(userId: string, body: DtoCutiFindAllRequest): Promise<DtoCutiFindAllResponse[]> {
+      async findAll(userId: string, body: DtoCutiFindAllRequest): Promise<DtoCutiFindAllResponse> {
         const skip = (body.pageIndex - 1) * body.pageSize;
         const records:any = await this.cutiRepository.find({
           where: {
@@ -388,7 +389,7 @@ export class CutiService {
         }
   
         var namaNotaris:any={}
-        var keluaran: DtoCutiFindAllResponse[]=[]
+        var keluaran: DtoCutiFindAllResponseData[]=[]
         records.forEach(async record => {
           if (namaNotaris.hasOwnProperty(record.userId) ) {
             record['namaNotaris']=namaNotaris[record.userId]
@@ -404,12 +405,19 @@ export class CutiService {
             })
             namaNotaris[record.userId]=chosenUsername
           }
+
           delete record.userId
           keluaran.push(record)
           
         });
-  
-        return keluaran
+        const totalCount = await this.cutiRepository.count();
+        const keluaran_lengkap:DtoCutiFindAllResponse ={
+          data: keluaran,
+          total: totalCount
+        }
+        return keluaran_lengkap
+        // return keluaran
+
       }
 
       async update(id: string, cutiData: DtoCutiRequest, userId: string): Promise<CutiEntity> {

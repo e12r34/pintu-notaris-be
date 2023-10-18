@@ -59,11 +59,16 @@ export class DtoCutiFindAllRequest{
     sortBy?:any;
 }
 
-export class DtoCutiFindAllResponse{
+export class DtoCutiFindAllResponseData{
     id:string;
     nomorPermohonan:string;
     namaNotaris:string;
     jenisLayanan:string;
     tanggalPermohonan:Date;
-    statusPermohonan:number;
+    statusPermohonan:number; 
+}
+
+export class DtoCutiFindAllResponse{
+    data:DtoCutiFindAllResponseData[];
+    total:number
 }

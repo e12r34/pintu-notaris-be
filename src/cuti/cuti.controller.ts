@@ -75,7 +75,7 @@ export class CutiController {
                 throw new UnauthorizedException('No user id found');
             }
             const cutiEntries = await this.cutiService.findAll(this.userId,body);
-            await this.cacheManager.set(generateCacheKeyCuti(this.userId,null,body), cutiEntries, 120);
+            await this.cacheManager.set(generateCacheKeyCuti(this.userId,null,body), cutiEntries, 30);
             res.json(cutiEntries);
             
         }
