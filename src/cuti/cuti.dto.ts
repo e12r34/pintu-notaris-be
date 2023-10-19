@@ -67,7 +67,8 @@ export class DtoCutiFindAllResponseData{
     tanggalPermohonan:Date;
     statusPermohonan:number; 
     tanggalMulai:Date;
-    jangkaWaktu:number
+    jangkaWaktu:number;
+    tanggalSelesai:Date;
 }
 
 export class DtoCutiFindAllResponse{

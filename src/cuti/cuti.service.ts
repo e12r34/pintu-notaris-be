@@ -428,6 +428,7 @@ export class CutiService {
             userId: true,
             tanggalMulai:true,
             jangkaWaktu:true,
+            tanggalSelesai:true
           },
           take: body.pageSize,
           skip: skip,
@@ -452,9 +453,9 @@ export class CutiService {
               }
             })
             namaNotaris[record.userId]=chosenUsername.nama
+            record['namaNotaris']=namaNotaris[record.userId]
           }
 
-          delete record.userId
           keluaran.push(record)
           
         });
