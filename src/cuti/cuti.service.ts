@@ -491,6 +491,8 @@ export class CutiService {
           throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
         }
 
+        const existing= await this.findOne(id,userId,false)
+
         var newCutiData= new CutiEntity()
         newCutiData.tanggalSelesai=tanggalSelesai
         cutiData.tanggalMulai ? newCutiData.tanggalMulai= cutiData.tanggalMulai:null
@@ -501,8 +503,15 @@ export class CutiService {
         if(cutiData.skPengangkatan){
             newCutiData.skPengangkatan= new CutiSkPengangkatanPindahEntity()
             if(cutiData.skPengangkatan.file!=""){
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/sk-pengangkatan/${uuidv4}.pdf`
+                var path
+                if (existing.skPengangkatan.file!=""&&existing.skPengangkatan.file!=null) {
+                  path=existing.skPengangkatan.file
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/sk-pengangkatan/${uuidv4}.pdf`
+                }
+
                 await this.uploadFile(path,cutiData.skPengangkatan.file)
                 
                 newCutiData.skPengangkatan['file']=path
@@ -513,8 +522,15 @@ export class CutiService {
         if(cutiData.beritaAcara) {
             newCutiData.beritaAcara =  new CutiBeritaAcaraEntity()
             if(cutiData.beritaAcara.file!=""){
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/berita-acara/${uuidv4}.pdf`
+                var path
+                if (existing.beritaAcara.file!=""&&existing.beritaAcara.file!=null) {
+                  path=existing.beritaAcara.file
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/berita-acara/${uuidv4}.pdf`
+                }
+
                 await this.uploadFile(path,cutiData.skPengangkatan.file)
                 newCutiData.beritaAcara.file=path
             }
@@ -529,44 +545,83 @@ export class CutiService {
             cutiData.notarisPenggantiSementara.nama?newCutiData.notarisPenggantiSementara.nama=cutiData.notarisPenggantiSementara.nama:null
             cutiData.notarisPenggantiSementara.email?newCutiData.notarisPenggantiSementara.email=cutiData.notarisPenggantiSementara.email:null
             if (cutiData.notarisPenggantiSementara.fileFoto!="") {
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/notaris-pengganti-foto/${uuidv4}`
+                var path
+                if (existing.notarisPenggantiSementara.fileFoto!=""&&existing.notarisPenggantiSementara.fileFoto!=null) {
+                  path=existing.notarisPenggantiSementara.fileFoto
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/notaris-pengganti-foto/${uuidv4}.pdf`
+                }
+
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileFoto)
                 newCutiData.notarisPenggantiSementara.fileFoto=path
             }
 
             if (cutiData.notarisPenggantiSementara.fileKtp!="") {
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/notaris-pengganti-ktp/${uuidv4}`
+                var path
+                if (existing.notarisPenggantiSementara.fileKtp!=""&&existing.notarisPenggantiSementara.fileKtp!=null) {
+                  path=existing.notarisPenggantiSementara.fileKtp
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/notaris-pengganti-ktp/${uuidv4}.pdf`
+                }
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileKtp)
                 newCutiData.notarisPenggantiSementara.fileKtp=path
 
             }
 
             if (cutiData.notarisPenggantiSementara.fileIjazah!="") {
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/notaris-pengganti-ijazah/${uuidv4}`
+                if (existing.notarisPenggantiSementara.fileIjazah!=""&&existing.notarisPenggantiSementara.fileIjazah!=null) {
+                  path=existing.notarisPenggantiSementara.fileIjazah
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/notaris-pengganti-ijazah/${uuidv4}.pdf`
+                }
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileIjazah)
                 newCutiData.notarisPenggantiSementara.fileIjazah=path
             }
 
             if (cutiData.notarisPenggantiSementara.fileSkck!="") {
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/notaris-pengganti-skck/${uuidv4}`
+                if (existing.notarisPenggantiSementara.fileSkck!=""&&existing.notarisPenggantiSementara.fileSkck!=null) {
+                  path=existing.notarisPenggantiSementara.fileSkck
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/notaris-pengganti-ijazah/${uuidv4}.pdf`
+                }
+              // const uuidv4 = uuid.v4()
+                // const path=`/cuti/notaris-pengganti-skck/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileSkck)
                 newCutiData.notarisPenggantiSementara.fileSkck=path
             }
 
             if (cutiData.notarisPenggantiSementara.fileRiwayatHidup!="") {
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/notaris-pengganti-riwayat-hidup/${uuidv4}`
+                if (existing.notarisPenggantiSementara.fileRiwayatHidup!=""&&existing.notarisPenggantiSementara.fileRiwayatHidup!=null) {
+                  path=existing.notarisPenggantiSementara.fileRiwayatHidup
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/notaris-pengganti-riwayat-hidup/${uuidv4}.pdf`
+                }
+              // const uuidv4 = uuid.v4()
+                // const path=`/cuti/notaris-pengganti-riwayat-hidup/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileRiwayatHidup)
                 newCutiData.notarisPenggantiSementara.fileRiwayatHidup=path
             }
 
             if (cutiData.notarisPenggantiSementara.fileKeteranganBerkerja!="") {
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/notaris-pengganti-keterangan-bekerja/${uuidv4}`
+                if (existing.notarisPenggantiSementara.fileKeteranganBerkerja!=""&&existing.notarisPenggantiSementara.fileKeteranganBerkerja!=null) {
+                  path=existing.notarisPenggantiSementara.fileKeteranganBerkerja
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/notaris-pengganti-keterangan-bekerja/${uuidv4}.pdf`
+                }  
+              // const uuidv4 = uuid.v4()
+                // const path=`/cuti/notaris-pengganti-keterangan-bekerja/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileKeteranganBerkerja)
                 newCutiData.notarisPenggantiSementara.fileKeteranganBerkerja=path
             }
@@ -579,7 +634,7 @@ export class CutiService {
         cutiData.voucherSimpadhu?newCutiData.voucherSimpadhu=cutiData.voucherSimpadhu:null
         newCutiData.userId=userId
 
-        await this.cutiRepository.update(id, newCutiData);
+      await this.cutiRepository.update(id, newCutiData);
         return this.findOne(id, userId);
       }
 
@@ -587,5 +642,13 @@ export class CutiService {
         const existing_record = await this.findOne(id,userId,false);
         this.Delete(existing_record)
         await this.cutiRepository.delete(id);
+      }
+
+      async submit(id:string, userId:string){
+        const existing_record=await this.findOne(id,userId,false);
+        if (existing_record.statusPermohonan>0) {
+          throw new BadRequestException("Status Permohonan Cuti sudah pernah dikirim, tidak bisa lagi mengubah data cuti")
+        }
+        await this.cutiRepository.update(id,{statusPermohonan:1})
       }
 }

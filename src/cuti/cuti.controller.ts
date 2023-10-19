@@ -146,7 +146,7 @@ export class CutiController {
 
     @Delete(':id')
     @Roles(Role.Notaris)
-    async removeKondite(
+    async removeCuti(
         @Res() res: Response,
         @Req() req: Request,
         @Param('id') id: string) 
@@ -161,6 +161,27 @@ export class CutiController {
         }
         catch(err){
             throw err;
+        }
+    }
+
+    @Post('/submit/:id')
+    @Roles(Role.Notaris)
+    async submitCuti(
+        @Res() res: Response,
+        @Req() req: Request,
+        @Param('id') id: string) 
+    {
+        try{
+            this.userId=req.user['id']
+            if (!this.userId) {
+                throw new UnauthorizedException('No user id found');
+            }
+
+            await this.cutiService.submit(id,this.userId)
+            res.json({message: `Success Submit data cuti`})
+        }
+        catch(error){
+            throw error;
         }
     }
 }
