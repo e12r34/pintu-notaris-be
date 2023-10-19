@@ -426,6 +426,8 @@ export class CutiService {
             nomorPermohonan: true,
             statusPermohonan: true,
             userId: true,
+            tanggalMulai:true,
+            jangkaWaktu:true,
           },
           take: body.pageSize,
           skip: skip,
@@ -449,7 +451,7 @@ export class CutiService {
                 nama: true,
               }
             })
-            namaNotaris[record.userId]=chosenUsername
+            namaNotaris[record.userId]=chosenUsername.nama
           }
 
           delete record.userId
