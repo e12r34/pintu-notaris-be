@@ -475,10 +475,11 @@ export class CutiService {
         const now = Date.now();
         const tanggalMulaiFormatDate = new Date(tanggalMulai);
         const tanggalSelesai=new Date(tanggalMulaiFormatDate.setMonth(tanggalMulaiFormatDate.getMonth() + cutiData.jangkaWaktu))
-
-        if (tanggalMulai.getTime()<now) {
-            throw new BadRequestException("pengajuan cuti tidak boleh dalam waktu lampau")     
-        }
+        console.log(tanggalMulai)
+        console.log(tanggalSelesai)
+        // if (tanggalMulai.getTime()<now) {
+        //     throw new BadRequestException("pengajuan cuti tidak boleh dalam waktu lampau")     
+        // }
 
         const results = await this.cutiRepository
         .createQueryBuilder('cuti')
@@ -486,7 +487,7 @@ export class CutiService {
         .where('cuti.tanggalSelesai < :tanggalMulai', { tanggalMulai })
         .orWhere('cuti.tanggalMulai > :tanggalSelesai', { tanggalSelesai })
         .getCount();
-        
+        console.log(results)
         if(results>0)
         {
           throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
