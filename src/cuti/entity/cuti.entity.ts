@@ -3,12 +3,8 @@ import { CutiSkPengangkatanPindahEntity } from './cuti-sk-pengangkatan.entity';
 import { CutiBeritaAcaraEntity } from './cuti-berita-acara.entity';
 import { NotarisPenggantiEntity } from './notaris-pengganti.entity';
 import { NotarisPemegangProtokolEntity } from './notaris-pemegang-protokol.entity';
+import { nows } from '../cuti.function';
 
-function now():string {
-  const skrg=Date.now()
-  const date = new Date(skrg);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
-}
 @Entity('Cuti') // Make sure the name matches your table name in the database
 export class CutiEntity {
 
@@ -28,12 +24,15 @@ export class CutiEntity {
   tanggalMulai: Date;
 
   @Column()
+  tanggalSelesai: Date;
+
+  @Column()
   jangkaWaktu: number;
 
   @Column()
   alasanCuti: number;
 
-  @Column({default:now()})
+  @Column({default:nows()})
   tanggalPermohonan: Date;
 
   @Column()

@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException, Delete } from '@nestjs/common';
 import { InjectMinio } from 'nestjs-minio';
 import { CutiEntity } from './entity/cuti.entity';
-import { Repository, getRepository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DtoCutiFindAllRequest, DtoCutiFindAllResponse, DtoCutiFindAllResponseData, DtoCutiRequest } from './cuti.dto';
 import * as uuid from 'uuid';
@@ -246,8 +246,30 @@ export class CutiService {
         }
       }
 
-      async create(cutiData: DtoCutiRequest, userId:string) {
+      async create(cutiData: DtoCutiRequest, userId:string) {        
+        const tanggalMulai = cutiData.tanggalMulai;
+        const now = Date.now();
+        const tanggalMulaiFormatDate = new Date(tanggalMulai);
+        const tanggalSelesai=new Date(tanggalMulaiFormatDate.setMonth(tanggalMulaiFormatDate.getMonth() + cutiData.jangkaWaktu))
+
+        if (tanggalMulai.getTime()<now) {
+            throw new BadRequestException("pengajuan cuti tidak boleh dalam waktu lampau")     
+        }
+
+        const results = await this.cutiRepository
+        .createQueryBuilder('cuti')
+        .where({userId})
+        .where('cuti.tanggalSelesai < :tanggalMulai', { tanggalMulai })
+        .orWhere('cuti.tanggalMulai > :tanggalSelesai', { tanggalSelesai })
+        .getCount();
+        
+        if(results>0)
+        {
+          throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
+        }
+
         var newCutiData= new CutiEntity()
+        newCutiData.tanggalSelesai=tanggalSelesai
         cutiData.tanggalMulai ? newCutiData.tanggalMulai= cutiData.tanggalMulai:null
         cutiData.jangkaWaktu ? newCutiData.jangkaWaktu= cutiData.jangkaWaktu:null
         cutiData.alasanCuti? newCutiData.alasanCuti=cutiData.alasanCuti:null
@@ -333,7 +355,7 @@ export class CutiService {
         cutiData.voucherSimpadhu?newCutiData.voucherSimpadhu=cutiData.voucherSimpadhu:null
         newCutiData.userId=userId
 
-        const latestRecord = await getRepository(CutiEntity)
+        const latestRecord = await this.cutiRepository
           .createQueryBuilder('cuti')
           .orderBy('cuti.tanggalPermohonan', 'DESC')
           .getOne();
@@ -445,7 +467,29 @@ export class CutiService {
       }
 
       async update(id: string, cutiData: DtoCutiRequest, userId: string): Promise<CutiEntity> {
+        const tanggalMulai = cutiData.tanggalMulai;
+        const now = Date.now();
+        const tanggalMulaiFormatDate = new Date(tanggalMulai);
+        const tanggalSelesai=new Date(tanggalMulaiFormatDate.setMonth(tanggalMulaiFormatDate.getMonth() + cutiData.jangkaWaktu))
+
+        if (tanggalMulai.getTime()<now) {
+            throw new BadRequestException("pengajuan cuti tidak boleh dalam waktu lampau")     
+        }
+
+        const results = await this.cutiRepository
+        .createQueryBuilder('cuti')
+        .where({userId})
+        .where('cuti.tanggalSelesai < :tanggalMulai', { tanggalMulai })
+        .orWhere('cuti.tanggalMulai > :tanggalSelesai', { tanggalSelesai })
+        .getCount();
+        
+        if(results>0)
+        {
+          throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
+        }
+
         var newCutiData= new CutiEntity()
+        newCutiData.tanggalSelesai=tanggalSelesai
         cutiData.tanggalMulai ? newCutiData.tanggalMulai= cutiData.tanggalMulai:null
         cutiData.jangkaWaktu ? newCutiData.jangkaWaktu= cutiData.jangkaWaktu:null
         cutiData.alasanCuti? newCutiData.alasanCuti=cutiData.alasanCuti:null

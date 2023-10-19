@@ -1,4 +1,4 @@
-import { Controller, Inject, Post, Body, Req, Res, UnauthorizedException, Param, Get, NotFoundException, Query, Put, Delete } from '@nestjs/common';
+import { Controller, Inject, Post, Body, Req, Res, UnauthorizedException, Param, Get, NotFoundException, Query, Put, Delete, BadRequestException } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CutiService } from './cuti.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -9,6 +9,7 @@ import { Response, Request } from 'express';
 import { DtoCutiFindAllResponse, DtoCutiRequest, DtoCutiFindAllRequest } from './cuti.dto';
 import { generateCacheKeyCuti } from 'src/kondite/kondite.function';
 import { CutiEntity } from './entity/cuti.entity';
+import { parsingTanggal } from './cuti.function';
 
 @ApiBearerAuth()
 @ApiTags('Cuti')
@@ -36,9 +37,12 @@ export class CutiController {
         if (!this.userId) {
             throw new UnauthorizedException('No user id found');
         }   
+        // res.json({status:"Success"})
+        
         const createdData=await this.cutiService.create(cutiData,this.userId);
         await this.cacheManager.set(generateCacheKeyCuti(this.userId, createdData.id), createdData);
         res.json(createdData)
+        
     }
     catch(error){
         throw error
