@@ -264,10 +264,10 @@ export class CutiService {
         .orWhere('cuti.tanggalMulai > :tanggalSelesai', { tanggalSelesai })
         .getCount();
         
-        if(results>0)
-        {
-          throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
-        }
+        // if(results>0)
+        // {
+        //   throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
+        // }
 
         var newCutiData= new CutiEntity()
         newCutiData.tanggalSelesai=tanggalSelesai
@@ -488,10 +488,10 @@ export class CutiService {
         .orWhere('cuti.tanggalMulai > :tanggalSelesai', { tanggalSelesai })
         .getCount();
         console.log(results)
-        if(results>0)
-        {
-          throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
-        }
+        // if(results>0)
+        // {
+        //   throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
+        // }
 
         const existing= await this.findOne(id,userId,false)
 
