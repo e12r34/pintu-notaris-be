@@ -252,11 +252,11 @@ export class CutiService {
         const tanggalMulaiFormatDate = new Date(tanggalMulai);
         const tanggalSelesai=new Date(tanggalMulaiFormatDate.setMonth(tanggalMulaiFormatDate.getMonth() + cutiData.jangkaWaktu))
 
-        console.log(tanggalMulai.getTime())
-        console.log(tanggalMulaiFormatDate.getTime())
-        if (tanggalMulai.getTime()<now) {
-            throw new BadRequestException("pengajuan cuti tidak boleh dalam waktu lampau")     
-        }
+        // console.log(tanggalMulai.getTime())
+        // console.log(tanggalMulaiFormatDate.getTime())
+        // if (tanggalMulai.getTime()<now) {
+        //     throw new BadRequestException("pengajuan cuti tidak boleh dalam waktu lampau")     
+        // }
         const results = await this.cutiRepository
         .createQueryBuilder('cuti')
         .where({userId})
