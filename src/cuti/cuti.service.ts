@@ -9,8 +9,8 @@ import config from 'src/config';
 import { User } from 'src/auth/user.entity';
 import { CutiSkPengangkatanPindahEntity } from './entity/cuti-sk-pengangkatan.entity';
 import { CutiBeritaAcaraEntity } from './entity/cuti-berita-acara.entity';
-import { NotarisPenggantiEntity } from './entity/cuti-notaris-pengganti.entity';
-import { NotarisPemegangProtokolEntity } from './entity/cuti-notaris-pemegang-protokol.entity';
+import { CutiNotarisPenggantiEntity } from './entity/cuti-notaris-pengganti.entity';
+import { CutiNotarisPemegangProtokolEntity } from './entity/cuti-notaris-pemegang-protokol.entity';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -312,7 +312,7 @@ export class CutiService {
         cutiData.fileSertifikatCuti?newCutiData.fileSertifikatCuti=cutiData.fileSertifikatCuti:null
         cutiData.fileSkPejabatNegara?newCutiData.fileSkPejabatNegara=cutiData.fileSkPejabatNegara:null
         if (cutiData.notarisPenggantiSementara) {
-          newCutiData.notarisPenggantiSementara= new NotarisPenggantiEntity()
+          newCutiData.notarisPenggantiSementara= new CutiNotarisPenggantiEntity()
             cutiData.notarisPenggantiSementara.nama?newCutiData.notarisPenggantiSementara.nama=cutiData.notarisPenggantiSementara.nama:null
             cutiData.notarisPenggantiSementara.email?newCutiData.notarisPenggantiSementara.email=cutiData.notarisPenggantiSementara.email:null
             if (cutiData.notarisPenggantiSementara.fileFoto!="") {
@@ -359,7 +359,7 @@ export class CutiService {
             }
         }
         if (cutiData.notarisPemegangProtokol) {
-          newCutiData.notarisPemegangProtokol=new NotarisPemegangProtokolEntity()
+          newCutiData.notarisPemegangProtokol=new CutiNotarisPemegangProtokolEntity()
             cutiData.notarisPemegangProtokol.nama?newCutiData.notarisPemegangProtokol.nama=cutiData.notarisPemegangProtokol.nama:null
             cutiData.notarisPemegangProtokol.alamat?newCutiData.notarisPemegangProtokol.alamat=cutiData.notarisPemegangProtokol.alamat:null
         }
@@ -541,7 +541,7 @@ export class CutiService {
         cutiData.fileSertifikatCuti?newCutiData.fileSertifikatCuti=cutiData.fileSertifikatCuti:null
         cutiData.fileSkPejabatNegara?newCutiData.fileSkPejabatNegara=cutiData.fileSkPejabatNegara:null
         if (cutiData.notarisPenggantiSementara) {
-          newCutiData.notarisPenggantiSementara= new NotarisPenggantiEntity()
+          newCutiData.notarisPenggantiSementara= new CutiNotarisPenggantiEntity()
             cutiData.notarisPenggantiSementara.nama?newCutiData.notarisPenggantiSementara.nama=cutiData.notarisPenggantiSementara.nama:null
             cutiData.notarisPenggantiSementara.email?newCutiData.notarisPenggantiSementara.email=cutiData.notarisPenggantiSementara.email:null
             if (cutiData.notarisPenggantiSementara.fileFoto!="") {
@@ -588,7 +588,7 @@ export class CutiService {
             }
         }
         if (cutiData.notarisPemegangProtokol) {
-          newCutiData.notarisPemegangProtokol=new NotarisPemegangProtokolEntity()
+          newCutiData.notarisPemegangProtokol=new CutiNotarisPemegangProtokolEntity()
             cutiData.notarisPemegangProtokol.nama?newCutiData.notarisPemegangProtokol.nama=cutiData.notarisPemegangProtokol.nama:null
             cutiData.notarisPemegangProtokol.alamat?newCutiData.notarisPemegangProtokol.alamat=cutiData.notarisPemegangProtokol.alamat:null
         }
