@@ -16,6 +16,6 @@ export class CutiSkPengangkatanPindahEntity {
     @Column()
     file: string;
   
-    @OneToOne(() => CutiEntity, (cuti) => cuti.skPengangkatan,{onDelete:'CASCADE'})
+    @OneToOne(() => CutiEntity, (cuti) => cuti.skPengangkatan)
     cuti: CutiEntity;
 }
