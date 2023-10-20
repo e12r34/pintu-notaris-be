@@ -379,10 +379,10 @@ export class CutiService {
           newCutiData.nomorPermohonan=`${process.env.APP_FORMAT_NOMOR_CUTI}1`
         }
         console.log(0)
-        const cuti = this.cutiRepository.create(newCutiData);
+        // const cuti = this.cutiRepository.create(newCutiData);
         console.log(1)
-        await this.cutiRepository.save(cuti);
-        
+        const cuti = await this.cutiRepository.save(newCutiData);
+
         // cutiData.skPengangkatan.file?cuti.skPengangkatan.file=cutiData.skPengangkatan.file:null
         // cutiData.beritaAcara.file?cuti.beritaAcara.file=cutiData.beritaAcara.file:null
         // cutiData.notarisPenggantiSementara.fileFoto?cuti.notarisPenggantiSementara.fileFoto=cutiData.notarisPenggantiSementara.fileFoto:null
