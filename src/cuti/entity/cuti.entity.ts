@@ -55,7 +55,7 @@ export class CutiEntity {
   @JoinColumn()
   beritaAcara: CutiBeritaAcaraEntity;
 
-  @OneToOne(() => CutiNotarisPenggantiEntity, { cascade: true })
+  @OneToOne(() => CutiNotarisPenggantiEntity, { onDelete:'CASCADE' })
   @JoinColumn()
   notarisPenggantiSementara: CutiNotarisPenggantiEntity
 
