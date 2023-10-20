@@ -51,7 +51,7 @@ export class CutiEntity {
   @JoinColumn()
   skPengangkatan: CutiSkPengangkatanPindahEntity;
 
-  @OneToOne(() => CutiBeritaAcaraEntity, { cascade: ['insert','recover','remove','soft-remove','update'] })
+  @OneToOne(() => CutiBeritaAcaraEntity, { cascade: true })
   @JoinColumn()
   beritaAcara: CutiBeritaAcaraEntity;
 
