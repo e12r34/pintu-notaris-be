@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException, Delete } from '@nestjs/common';
 import { InjectMinio } from 'nestjs-minio';
 import { CutiEntity } from './entity/cuti.entity';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DtoCutiFindAllRequest, DtoCutiFindAllResponse, DtoCutiFindAllResponseData, DtoCutiRequest } from './cuti.dto';
 import * as uuid from 'uuid';
@@ -257,12 +257,23 @@ export class CutiService {
         // if (tanggalMulai.getTime()<now) {
         //     throw new BadRequestException("pengajuan cuti tidak boleh dalam waktu lampau")     
         // }
+        // const results = await this.cutiRepository
+        // .createQueryBuilder('cuti')
+        // .where({userId})
+        // .where('cuti.tanggalSelesai < :tanggalMulai', { tanggalMulai })
+        // .orWhere('cuti.tanggalMulai > :tanggalSelesai', { tanggalSelesai })
+        // .getCount();
         const results = await this.cutiRepository
         .createQueryBuilder('cuti')
-        .where({userId})
-        .where('cuti.tanggalSelesai < :tanggalMulai', { tanggalMulai })
-        .orWhere('cuti.tanggalMulai > :tanggalSelesai', { tanggalSelesai })
+        .where({ userId })
+        .andWhere(
+          new Brackets(qb => {
+            qb.where('cuti.tanggalSelesai < :tanggalMulai', { tanggalMulai })
+              .orWhere('cuti.tanggalMulai > :tanggalSelesai', { tanggalSelesai });
+          })
+        )
         .getCount();
+
         
         if(results>0)
         {
@@ -362,7 +373,7 @@ export class CutiService {
           .getOne();
         if (latestRecord) {
           const pisah = latestRecord.nomorPermohonan.split("-")
-          const new_number=pisah[pisah.length-1]+1
+          const new_number=parseInt(pisah[pisah.length-1])+1
           newCutiData.nomorPermohonan=`${process.env.APP_FORMAT_NOMOR_CUTI}${new_number}`
         }
         else{
