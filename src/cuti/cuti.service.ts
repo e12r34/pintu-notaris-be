@@ -264,10 +264,10 @@ export class CutiService {
         .orWhere('cuti.tanggalMulai > :tanggalSelesai', { tanggalSelesai })
         .getCount();
         
-        // if(results>0)
-        // {
-        //   throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
-        // }
+        if(results>0)
+        {
+          throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
+        }
 
         var newCutiData= new CutiEntity()
         newCutiData.tanggalSelesai=tanggalSelesai
@@ -370,17 +370,18 @@ export class CutiService {
         }
 
         const cuti = this.cutiRepository.create(newCutiData);
-        cutiData.skPengangkatan.file?cuti.skPengangkatan.file=cutiData.skPengangkatan.file:null
-        cutiData.beritaAcara.file?cuti.beritaAcara.file=cutiData.beritaAcara.file:null
-        cutiData.notarisPenggantiSementara.fileFoto?cuti.notarisPenggantiSementara.fileFoto=cutiData.notarisPenggantiSementara.fileFoto:null
-        cutiData.notarisPenggantiSementara.fileKtp?cuti.notarisPenggantiSementara.fileKtp=cutiData.notarisPenggantiSementara.fileKtp:null
-        cutiData.notarisPenggantiSementara.fileIjazah?cuti.notarisPenggantiSementara.fileIjazah=cutiData.notarisPenggantiSementara.fileIjazah:null
-        cutiData.notarisPenggantiSementara.fileRiwayatHidup?cuti.notarisPenggantiSementara.fileRiwayatHidup=cutiData.notarisPenggantiSementara.fileRiwayatHidup:null
-        cutiData.notarisPenggantiSementara.fileSkck?cuti.notarisPenggantiSementara.fileSkck=cutiData.notarisPenggantiSementara.fileSkck:null
-        cutiData.notarisPenggantiSementara.fileKeteranganBerkerja?cuti.notarisPenggantiSementara.fileKeteranganBerkerja=cutiData.notarisPenggantiSementara.fileKeteranganBerkerja:null
-        
         await this.cutiRepository.save(cuti);
-        return cuti
+        // cutiData.skPengangkatan.file?cuti.skPengangkatan.file=cutiData.skPengangkatan.file:null
+        // cutiData.beritaAcara.file?cuti.beritaAcara.file=cutiData.beritaAcara.file:null
+        // cutiData.notarisPenggantiSementara.fileFoto?cuti.notarisPenggantiSementara.fileFoto=cutiData.notarisPenggantiSementara.fileFoto:null
+        // cutiData.notarisPenggantiSementara.fileKtp?cuti.notarisPenggantiSementara.fileKtp=cutiData.notarisPenggantiSementara.fileKtp:null
+        // cutiData.notarisPenggantiSementara.fileIjazah?cuti.notarisPenggantiSementara.fileIjazah=cutiData.notarisPenggantiSementara.fileIjazah:null
+        // cutiData.notarisPenggantiSementara.fileRiwayatHidup?cuti.notarisPenggantiSementara.fileRiwayatHidup=cutiData.notarisPenggantiSementara.fileRiwayatHidup:null
+        // cutiData.notarisPenggantiSementara.fileSkck?cuti.notarisPenggantiSementara.fileSkck=cutiData.notarisPenggantiSementara.fileSkck:null
+        // cutiData.notarisPenggantiSementara.fileKeteranganBerkerja?cuti.notarisPenggantiSementara.fileKeteranganBerkerja=cutiData.notarisPenggantiSementara.fileKeteranganBerkerja:null
+        
+        
+        return this.findOne(cuti.id,userId,true)
         
       }
 
@@ -475,25 +476,23 @@ export class CutiService {
         const now = Date.now();
         const tanggalMulaiFormatDate = new Date(tanggalMulai);
         const tanggalSelesai=new Date(tanggalMulaiFormatDate.setMonth(tanggalMulaiFormatDate.getMonth() + cutiData.jangkaWaktu))
-        console.log(tanggalMulai)
-        console.log(tanggalSelesai)
+
+        // console.log(tanggalMulai.getTime())
+        // console.log(tanggalMulaiFormatDate.getTime())
         // if (tanggalMulai.getTime()<now) {
         //     throw new BadRequestException("pengajuan cuti tidak boleh dalam waktu lampau")     
         // }
-
         const results = await this.cutiRepository
         .createQueryBuilder('cuti')
         .where({userId})
         .where('cuti.tanggalSelesai < :tanggalMulai', { tanggalMulai })
         .orWhere('cuti.tanggalMulai > :tanggalSelesai', { tanggalSelesai })
         .getCount();
-        console.log(results)
-        // if(results>0)
-        // {
-        //   throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
-        // }
-
-        const existing= await this.findOne(id,userId,false)
+        
+        if(results>0)
+        {
+          throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
+        }
 
         var newCutiData= new CutiEntity()
         newCutiData.tanggalSelesai=tanggalSelesai
@@ -501,19 +500,11 @@ export class CutiService {
         cutiData.jangkaWaktu ? newCutiData.jangkaWaktu= cutiData.jangkaWaktu:null
         cutiData.alasanCuti? newCutiData.alasanCuti=cutiData.alasanCuti:null
         cutiData.jenisLayanan? newCutiData.jenisLayanan=cutiData.jenisLayanan:null
-        
         if(cutiData.skPengangkatan){
             newCutiData.skPengangkatan= new CutiSkPengangkatanPindahEntity()
             if(cutiData.skPengangkatan.file!=""){
-                var path
-                if (existing.skPengangkatan.file!=""&&existing.skPengangkatan.file!=null) {
-                  path=existing.skPengangkatan.file
-                }
-                else{
-                  const uuidv4 = uuid.v4()
-                  path=`/cuti/sk-pengangkatan/${uuidv4}.pdf`
-                }
-
+                const uuidv4 = uuid.v4()
+                const path=`/cuti/sk-pengangkatan/${uuidv4}.pdf`
                 await this.uploadFile(path,cutiData.skPengangkatan.file)
                 
                 newCutiData.skPengangkatan['file']=path
@@ -524,15 +515,8 @@ export class CutiService {
         if(cutiData.beritaAcara) {
             newCutiData.beritaAcara =  new CutiBeritaAcaraEntity()
             if(cutiData.beritaAcara.file!=""){
-                var path
-                if (existing.beritaAcara.file!=""&&existing.beritaAcara.file!=null) {
-                  path=existing.beritaAcara.file
-                }
-                else{
-                  const uuidv4 = uuid.v4()
-                  path=`/cuti/berita-acara/${uuidv4}.pdf`
-                }
-
+                const uuidv4 = uuid.v4()
+                const path=`/cuti/berita-acara/${uuidv4}.pdf`
                 await this.uploadFile(path,cutiData.skPengangkatan.file)
                 newCutiData.beritaAcara.file=path
             }
@@ -547,83 +531,44 @@ export class CutiService {
             cutiData.notarisPenggantiSementara.nama?newCutiData.notarisPenggantiSementara.nama=cutiData.notarisPenggantiSementara.nama:null
             cutiData.notarisPenggantiSementara.email?newCutiData.notarisPenggantiSementara.email=cutiData.notarisPenggantiSementara.email:null
             if (cutiData.notarisPenggantiSementara.fileFoto!="") {
-                var path
-                if (existing.notarisPenggantiSementara.fileFoto!=""&&existing.notarisPenggantiSementara.fileFoto!=null) {
-                  path=existing.notarisPenggantiSementara.fileFoto
-                }
-                else{
-                  const uuidv4 = uuid.v4()
-                  path=`/cuti/notaris-pengganti-foto/${uuidv4}.pdf`
-                }
-
+                const uuidv4 = uuid.v4()
+                const path=`/cuti/notaris-pengganti-foto/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileFoto)
                 newCutiData.notarisPenggantiSementara.fileFoto=path
             }
 
             if (cutiData.notarisPenggantiSementara.fileKtp!="") {
-                var path
-                if (existing.notarisPenggantiSementara.fileKtp!=""&&existing.notarisPenggantiSementara.fileKtp!=null) {
-                  path=existing.notarisPenggantiSementara.fileKtp
-                }
-                else{
-                  const uuidv4 = uuid.v4()
-                  path=`/cuti/notaris-pengganti-ktp/${uuidv4}.pdf`
-                }
+                const uuidv4 = uuid.v4()
+                const path=`/cuti/notaris-pengganti-ktp/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileKtp)
                 newCutiData.notarisPenggantiSementara.fileKtp=path
 
             }
 
             if (cutiData.notarisPenggantiSementara.fileIjazah!="") {
-                if (existing.notarisPenggantiSementara.fileIjazah!=""&&existing.notarisPenggantiSementara.fileIjazah!=null) {
-                  path=existing.notarisPenggantiSementara.fileIjazah
-                }
-                else{
-                  const uuidv4 = uuid.v4()
-                  path=`/cuti/notaris-pengganti-ijazah/${uuidv4}.pdf`
-                }
+                const uuidv4 = uuid.v4()
+                const path=`/cuti/notaris-pengganti-ijazah/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileIjazah)
                 newCutiData.notarisPenggantiSementara.fileIjazah=path
             }
 
             if (cutiData.notarisPenggantiSementara.fileSkck!="") {
-                if (existing.notarisPenggantiSementara.fileSkck!=""&&existing.notarisPenggantiSementara.fileSkck!=null) {
-                  path=existing.notarisPenggantiSementara.fileSkck
-                }
-                else{
-                  const uuidv4 = uuid.v4()
-                  path=`/cuti/notaris-pengganti-ijazah/${uuidv4}.pdf`
-                }
-              // const uuidv4 = uuid.v4()
-                // const path=`/cuti/notaris-pengganti-skck/${uuidv4}`
+                const uuidv4 = uuid.v4()
+                const path=`/cuti/notaris-pengganti-skck/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileSkck)
                 newCutiData.notarisPenggantiSementara.fileSkck=path
             }
 
             if (cutiData.notarisPenggantiSementara.fileRiwayatHidup!="") {
-                if (existing.notarisPenggantiSementara.fileRiwayatHidup!=""&&existing.notarisPenggantiSementara.fileRiwayatHidup!=null) {
-                  path=existing.notarisPenggantiSementara.fileRiwayatHidup
-                }
-                else{
-                  const uuidv4 = uuid.v4()
-                  path=`/cuti/notaris-pengganti-riwayat-hidup/${uuidv4}.pdf`
-                }
-              // const uuidv4 = uuid.v4()
-                // const path=`/cuti/notaris-pengganti-riwayat-hidup/${uuidv4}`
+                const uuidv4 = uuid.v4()
+                const path=`/cuti/notaris-pengganti-riwayat-hidup/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileRiwayatHidup)
                 newCutiData.notarisPenggantiSementara.fileRiwayatHidup=path
             }
 
             if (cutiData.notarisPenggantiSementara.fileKeteranganBerkerja!="") {
-                if (existing.notarisPenggantiSementara.fileKeteranganBerkerja!=""&&existing.notarisPenggantiSementara.fileKeteranganBerkerja!=null) {
-                  path=existing.notarisPenggantiSementara.fileKeteranganBerkerja
-                }
-                else{
-                  const uuidv4 = uuid.v4()
-                  path=`/cuti/notaris-pengganti-keterangan-bekerja/${uuidv4}.pdf`
-                }  
-              // const uuidv4 = uuid.v4()
-                // const path=`/cuti/notaris-pengganti-keterangan-bekerja/${uuidv4}`
+                const uuidv4 = uuid.v4()
+                const path=`/cuti/notaris-pengganti-keterangan-bekerja/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileKeteranganBerkerja)
                 newCutiData.notarisPenggantiSementara.fileKeteranganBerkerja=path
             }
@@ -636,8 +581,23 @@ export class CutiService {
         cutiData.voucherSimpadhu?newCutiData.voucherSimpadhu=cutiData.voucherSimpadhu:null
         newCutiData.userId=userId
 
-      await this.cutiRepository.update(id, newCutiData);
-        return this.findOne(id, userId);
+        const latestRecord = await this.cutiRepository
+          .createQueryBuilder('cuti')
+          .orderBy('cuti.tanggalPermohonan', 'DESC')
+          .getOne();
+        if (latestRecord) {
+          const pisah = latestRecord.nomorPermohonan.split("-")
+          const new_number=pisah[pisah.length-1]+1
+          newCutiData.nomorPermohonan=`${process.env.APP_FORMAT_NOMOR_CUTI}${new_number}`
+        }
+        else{
+          newCutiData.nomorPermohonan=`${process.env.APP_FORMAT_NOMOR_CUTI}1`
+        }
+
+
+        await this.cutiRepository.update(id, newCutiData);
+      
+        return this.findOne(id, userId,true);
       }
 
       async remove(id: string, userId:string): Promise<void> {
