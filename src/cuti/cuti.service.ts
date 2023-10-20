@@ -9,8 +9,8 @@ import config from 'src/config';
 import { User } from 'src/auth/user.entity';
 import { CutiSkPengangkatanPindahEntity } from './entity/cuti-sk-pengangkatan.entity';
 import { CutiBeritaAcaraEntity } from './entity/cuti-berita-acara.entity';
-import { NotarisPenggantiEntity } from './entity/notaris-pengganti.entity';
-import { NotarisPemegangProtokolEntity } from './entity/notaris-pemegang-protokol.entity';
+import { NotarisPenggantiEntity } from './entity/cuti-notaris-pengganti.entity';
+import { NotarisPemegangProtokolEntity } from './entity/cuti-notaris-pemegang-protokol.entity';
 import * as dotenv from 'dotenv';
 
 dotenv.config();

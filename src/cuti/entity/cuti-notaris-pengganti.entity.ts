@@ -3,7 +3,7 @@ import { CutiEntity } from './cuti.entity';
 
 
 @Entity() // Make sure the name matches your table name in the database
-export class NotarisPenggantiEntity {
+export class CutiNotarisPenggantiEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
   

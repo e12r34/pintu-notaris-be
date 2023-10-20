@@ -21,8 +21,8 @@ import { CutiModule } from './cuti/cuti.module';
 import { CutiEntity } from './cuti/entity/cuti.entity';
 import { CutiSkPengangkatanPindahEntity } from './cuti/entity/cuti-sk-pengangkatan.entity';
 import { CutiBeritaAcaraEntity } from './cuti/entity/cuti-berita-acara.entity';
-import { NotarisPemegangProtokolEntity } from './cuti/entity/notaris-pemegang-protokol.entity';
-import { NotarisPenggantiEntity } from './cuti/entity/notaris-pengganti.entity';
+import { NotarisPemegangProtokolEntity } from './cuti/entity/cuti-notaris-pemegang-protokol.entity';
+import { NotarisPenggantiEntity } from './cuti/entity/cuti-notaris-pengganti.entity';
 
 dotenv.config();
 

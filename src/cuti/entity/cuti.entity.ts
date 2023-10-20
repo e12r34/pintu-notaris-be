@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 import { CutiSkPengangkatanPindahEntity } from './cuti-sk-pengangkatan.entity';
 import { CutiBeritaAcaraEntity } from './cuti-berita-acara.entity';
-import { NotarisPenggantiEntity } from './notaris-pengganti.entity';
-import { NotarisPemegangProtokolEntity } from './notaris-pemegang-protokol.entity';
+import { CutiNotarisPenggantiEntity } from './cuti-notaris-pengganti.entity';
+import { CutiNotarisPemegangProtokolEntity } from './cuti-notaris-pemegang-protokol.entity';
 import { nows } from '../cuti.function';
 
 @Entity('Cuti') // Make sure the name matches your table name in the database
@@ -55,11 +55,11 @@ export class CutiEntity {
   @JoinColumn()
   beritaAcara: CutiBeritaAcaraEntity;
 
-  @OneToOne(() => NotarisPenggantiEntity, { cascade: true })
+  @OneToOne(() => CutiNotarisPenggantiEntity, { cascade: true })
   @JoinColumn()
-  notarisPenggantiSementara: NotarisPenggantiEntity
+  notarisPenggantiSementara: CutiNotarisPenggantiEntity
 
-  @OneToOne(() => NotarisPemegangProtokolEntity, { cascade: true })
+  @OneToOne(() => CutiNotarisPemegangProtokolEntity, { cascade: true })
   @JoinColumn()
-  notarisPemegangProtokol: NotarisPemegangProtokolEntity
+  notarisPemegangProtokol: CutiNotarisPemegangProtokolEntity
 }
