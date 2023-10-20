@@ -21,8 +21,8 @@ import { CutiModule } from './cuti/cuti.module';
 import { CutiEntity } from './cuti/entity/cuti.entity';
 import { CutiSkPengangkatanPindahEntity } from './cuti/entity/cuti-sk-pengangkatan.entity';
 import { CutiBeritaAcaraEntity } from './cuti/entity/cuti-berita-acara.entity';
-import { NotarisPemegangProtokolEntity } from './cuti/entity/cuti-notaris-pemegang-protokol.entity';
-import { NotarisPenggantiEntity } from './cuti/entity/cuti-notaris-pengganti.entity';
+import { CutiNotarisPemegangProtokolEntity } from './cuti/entity/cuti-notaris-pemegang-protokol.entity';
+import { CutiNotarisPenggantiEntity } from './cuti/entity/cuti-notaris-pengganti.entity';
 
 dotenv.config();
 
@@ -48,8 +48,8 @@ dotenv.config();
         CutiEntity,
         CutiSkPengangkatanPindahEntity,
         CutiBeritaAcaraEntity,
-        NotarisPemegangProtokolEntity,
-        NotarisPenggantiEntity
+        CutiNotarisPemegangProtokolEntity,
+        CutiNotarisPenggantiEntity
       ],
       // set to true in the new database, set false, to existing database
       synchronize: process.env.DB_SYNCHRONIZE === 'true',
