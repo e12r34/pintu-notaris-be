@@ -48,19 +48,18 @@ export class CutiEntity {
   statusPermohonan: number;
 
   @OneToOne(() => CutiSkPengangkatanPindahEntity, { cascade: true })
-  @JoinColumn()
+  @JoinColumn([{ name: "skPengangkatanId", referencedColumnName: "id" }])
   skPengangkatan: CutiSkPengangkatanPindahEntity;
 
   @OneToOne(() => CutiBeritaAcaraEntity, { cascade: true })
-  @JoinColumn()
+  @JoinColumn([{ name: "beritaAcaraId", referencedColumnName: "id" }])
   beritaAcara: CutiBeritaAcaraEntity;
 
   @OneToOne(() => NotarisPenggantiEntity, { cascade: true })
-  @JoinColumn()
+  @JoinColumn([{ name: "beritaAcaraId", referencedColumnName: "id" }])
   notarisPenggantiSementara: NotarisPenggantiEntity
 
   @OneToOne(() => NotarisPemegangProtokolEntity, { cascade: true })
-  @JoinColumn()
+  @JoinColumn([{ name: "notarisPemegangProtokolId", referencedColumnName: "id" }])
   notarisPemegangProtokol: NotarisPemegangProtokolEntity
-  newCutiData: {};
 }
