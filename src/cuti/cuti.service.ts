@@ -268,8 +268,8 @@ export class CutiService {
         .where({ userId })
         .andWhere(
           new Brackets(qb => {
-            qb.where('cuti.tanggalSelesai < :tanggalMulai', { tanggalMulai })
-              .orWhere('cuti.tanggalMulai > :tanggalSelesai', { tanggalSelesai });
+            qb.where('cuti.tanggalSelesai >= :tanggalMulai', { tanggalMulai })
+              .orWhere('cuti.tanggalMulai <= :tanggalSelesai', { tanggalSelesai });
           })
         )
         .getCount();
@@ -399,6 +399,7 @@ export class CutiService {
       async deleteFile(filePath:string){
         try{
           const bucketName=config.minioBucketName
+          console.log(filePath)
           await this.minioClient.removeObject(bucketName, filePath)
         }
         catch(err){
