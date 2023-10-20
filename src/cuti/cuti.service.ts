@@ -267,9 +267,9 @@ export class CutiService {
         .createQueryBuilder('cuti')
         .where({ userId })
         .andWhere('(\
-          (:tanggalMulai > cuti.tanggalMulai AND :tanggalMulai < cuti.TanggalSelesai) \
+          (:tanggalMulai >= cuti.tanggalMulai AND :tanggalMulai <= cuti.TanggalSelesai) \
           OR \
-          (:tanggalSelesai > cuti.tanggalMulai AND :tanggalSelesai < cuti.TanggalSelesai)\
+          (:tanggalSelesai >= cuti.tanggalMulai AND :tanggalSelesai <= cuti.TanggalSelesai)\
         )', { tanggalMulai, tanggalSelesai })
         .getCount();
 
@@ -495,9 +495,12 @@ export class CutiService {
         // }
         const results = await this.cutiRepository
         .createQueryBuilder('cuti')
-        .where({userId})
-        .where('cuti.tanggalSelesai < :tanggalMulai', { tanggalMulai })
-        .orWhere('cuti.tanggalMulai > :tanggalSelesai', { tanggalSelesai })
+        .where({ userId })
+        .andWhere('(\
+          (:tanggalMulai >= cuti.tanggalMulai AND :tanggalMulai <= cuti.TanggalSelesai) \
+          OR \
+          (:tanggalSelesai >= cuti.tanggalMulai AND :tanggalSelesai <= cuti.TanggalSelesai)\
+        )', { tanggalMulai, tanggalSelesai })
         .getCount();
         
         if(results>0)
