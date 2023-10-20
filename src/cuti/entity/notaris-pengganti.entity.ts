@@ -7,28 +7,28 @@ export class NotarisPenggantiEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
   
-    @Column()
+    @Column({default:""})
     nama: string;
   
-    @Column()
+    @Column({default:""})
     email: string;
 
-    @Column()
+    @Column({default:""})
     fileFoto: string;
 
-    @Column()
+    @Column({default:""})
     fileKtp: string;
   
-    @Column()
+    @Column({default:""})
     fileIjazah: string;
 
-    @Column()
+    @Column({default:""})
     fileSkck: string;
 
-    @Column()
+    @Column({default:""})
     fileRiwayatHidup: string;
 
-    @Column()
+    @Column({default:""})
     fileKeteranganBerkerja: string;
 
     @OneToOne(() => CutiEntity, (cuti) => cuti.skPengangkatan)
