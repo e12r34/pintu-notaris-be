@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
 import { CutiEntity } from './cuti.entity';
 
 
@@ -16,7 +16,6 @@ export class CutiSkPengangkatanPindahEntity {
     @Column()
     file: string;
   
-    @OneToOne(() => CutiEntity, (cuti) => cuti.skPengangkatan, {onUpdate:'CASCADE',onDelete:'CASCADE', cascade:true})
-    @JoinColumn()
+    @ManyToOne(() => CutiEntity, (cuti) => cuti.skPengangkatan)
     cuti: CutiEntity;
 }

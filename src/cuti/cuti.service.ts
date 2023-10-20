@@ -378,10 +378,10 @@ export class CutiService {
         else{
           newCutiData.nomorPermohonan=`${process.env.APP_FORMAT_NOMOR_CUTI}1`
         }
-        console.log(0)
-        // const cuti = this.cutiRepository.create(newCutiData);
-        console.log(1)
-        const cuti = await this.cutiRepository.save(newCutiData);
+        // console.log(0)
+        const cuti = this.cutiRepository.create(newCutiData);
+        // console.log(1)
+        await this.cutiRepository.save(newCutiData);
 
         // cutiData.skPengangkatan.file?cuti.skPengangkatan.file=cutiData.skPengangkatan.file:null
         // cutiData.beritaAcara.file?cuti.beritaAcara.file=cutiData.beritaAcara.file:null
@@ -392,7 +392,7 @@ export class CutiService {
         // cutiData.notarisPenggantiSementara.fileSkck?cuti.notarisPenggantiSementara.fileSkck=cutiData.notarisPenggantiSementara.fileSkck:null
         // cutiData.notarisPenggantiSementara.fileKeteranganBerkerja?cuti.notarisPenggantiSementara.fileKeteranganBerkerja=cutiData.notarisPenggantiSementara.fileKeteranganBerkerja:null
         
-        console.log('2')
+        // console.log('2')
         return this.findOne(cuti.id,userId,true)
         
       }
