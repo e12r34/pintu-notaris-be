@@ -379,8 +379,8 @@ export class CutiService {
           newCutiData.nomorPermohonan=`${process.env.APP_FORMAT_NOMOR_CUTI}1`
         }
 
-        const cuti = this.cutiRepository.create(newCutiData);
-        await this.cutiRepository.save(cuti);
+        // const cuti = this.cutiRepository.create(newCutiData);
+        // await this.cutiRepository.save(cuti);
         // cutiData.skPengangkatan.file?cuti.skPengangkatan.file=cutiData.skPengangkatan.file:null
         // cutiData.beritaAcara.file?cuti.beritaAcara.file=cutiData.beritaAcara.file:null
         // cutiData.notarisPenggantiSementara.fileFoto?cuti.notarisPenggantiSementara.fileFoto=cutiData.notarisPenggantiSementara.fileFoto:null
@@ -391,7 +391,8 @@ export class CutiService {
         // cutiData.notarisPenggantiSementara.fileKeteranganBerkerja?cuti.notarisPenggantiSementara.fileKeteranganBerkerja=cutiData.notarisPenggantiSementara.fileKeteranganBerkerja:null
         
         
-        return this.findOne(cuti.id,userId,true)
+        // return this.findOne(id,userId,true)
+        return new CutiEntity()
         
       }
 
