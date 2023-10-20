@@ -266,12 +266,11 @@ export class CutiService {
         const results = await this.cutiRepository
         .createQueryBuilder('cuti')
         .where({ userId })
-        .andWhere(
-          new Brackets(qb => {
-            qb.where('cuti.tanggalSelesai >= :tanggalMulai', { tanggalMulai })
-              .orWhere('cuti.tanggalMulai <= :tanggalSelesai', { tanggalSelesai });
-          })
-        )
+        .andWhere('(\
+          (:tanggalMulai > cuti.tanggalMulai AND :tanggalMulai < cuti.TanggalSelesai) \
+          OR \
+          (:tanggalSelesai > cuti.tanggalMulai AND :tanggalSelesai < cuti.TanggalSelesai)\
+        )', { tanggalMulai, tanggalSelesai })
         .getCount();
 
         
