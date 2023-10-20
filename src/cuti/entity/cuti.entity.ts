@@ -47,7 +47,7 @@ export class CutiEntity {
   @Column({default:0})
   statusPermohonan: number;
 
-  @OneToOne(() => CutiSkPengangkatanPindahEntity, { onDelete:'CASCADE' })
+  @OneToOne(() => CutiSkPengangkatanPindahEntity)
   // @JoinColumn()
   skPengangkatan: CutiSkPengangkatanPindahEntity;
 
