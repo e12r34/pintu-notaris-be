@@ -560,6 +560,10 @@ export class CutiService {
 
         const existingCuti= await this.findOne(id, userId,false);
 
+        if (existingCuti.statusPermohonan>0) {
+          throw new BadRequestException("Tidak Bisa Mengubah Permohonan Cuti karena sudah di submit")
+        }
+
         var newCutiData= new CutiEntity()
         tanggalSelesai?newCutiData.tanggalSelesai=tanggalSelesai:null
         cutiData.tanggalMulai ? newCutiData.tanggalMulai= cutiData.tanggalMulai:null
@@ -732,6 +736,9 @@ export class CutiService {
       async remove(id: string, userId:string): Promise<void> {
         try{
           const existing_record = await this.findOne(id,userId,false);
+          if (existing_record.statusPermohonan>0) {
+            throw new BadRequestException("Tidak Bisa menghapus permohonan cuti yang sudah di submit")
+          }
           this.Delete(existing_record)
           await this.cutiBARepository.delete(existing_record.beritaAcara.id)
           await this.cutiSKRepository.delete(existing_record.skPengangkatan.id)
