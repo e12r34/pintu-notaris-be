@@ -337,7 +337,7 @@ export class CutiService {
             if(cutiData.beritaAcara.file!=""){
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/berita-acara/${uuidv4}.pdf`
-                await this.uploadFile(path,cutiData.skPengangkatan.file)
+                await this.uploadFile(path,cutiData.beritaAcara.file)
                 newCutiData.beritaAcara.file=path
             }
             cutiData.beritaAcara.nomor?newCutiData.beritaAcara.nomor=cutiData.beritaAcara.nomor:null
@@ -423,9 +423,7 @@ export class CutiService {
         else{
           newCutiData.nomorPermohonan=`${process.env.APP_FORMAT_NOMOR_CUTI}1`
         }
-        // console.log(0)
         const cuti = this.cutiRepository.create(newCutiData);
-        // console.log(1)
         await this.cutiRepository.save(newCutiData);
 
         // cutiData.skPengangkatan.file?cuti.skPengangkatan.file=cutiData.skPengangkatan.file:null
@@ -533,7 +531,7 @@ export class CutiService {
         const now = Date.now();
         const tanggalMulaiFormatDate = new Date(tanggalMulai);
         const tanggalSelesai=new Date(tanggalMulaiFormatDate.setMonth(tanggalMulaiFormatDate.getMonth() + cutiData.jangkaWaktu))
-
+        
         // console.log(tanggalMulai.getTime())
         // console.log(tanggalMulaiFormatDate.getTime())
         // if (tanggalMulai.getTime()<now) {
@@ -554,6 +552,8 @@ export class CutiService {
           throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
         }
 
+        const existingCuti= await this.findOne(id, userId,false);
+
         var newCutiData= new CutiEntity()
         newCutiData.tanggalSelesai=tanggalSelesai
         cutiData.tanggalMulai ? newCutiData.tanggalMulai= cutiData.tanggalMulai:null
@@ -562,9 +562,15 @@ export class CutiService {
         cutiData.jenisLayanan? newCutiData.jenisLayanan=cutiData.jenisLayanan:null
         if(cutiData.skPengangkatan){
             newCutiData.skPengangkatan= new CutiSkPengangkatanPindahEntity()
-            if(cutiData.skPengangkatan.file!=""){
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/sk-pengangkatan/${uuidv4}.pdf`
+            if(cutiData.skPengangkatan.file){
+                var path
+                if (existingCuti.skPengangkatan.file) {
+                  path=existingCuti.skPengangkatan.file                  
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/sk-pengangkatan/${uuidv4}.pdf`  
+                }
                 await this.uploadFile(path,cutiData.skPengangkatan.file)
                 
                 newCutiData.skPengangkatan['file']=path
@@ -574,26 +580,45 @@ export class CutiService {
         }
         if(cutiData.beritaAcara) {
             newCutiData.beritaAcara =  new CutiBeritaAcaraEntity()
-            if(cutiData.beritaAcara.file!=""){
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/berita-acara/${uuidv4}.pdf`
-                await this.uploadFile(path,cutiData.skPengangkatan.file)
+            if(cutiData.beritaAcara.file){
+                var path
+                if (existingCuti.beritaAcara.file) {
+                  path=existingCuti.beritaAcara.file                  
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/berita-acara/${uuidv4}.pdf`
+                }
+                await this.uploadFile(path,cutiData.beritaAcara.file)
                 newCutiData.beritaAcara.file=path
             }
             cutiData.beritaAcara.nomor?newCutiData.beritaAcara.nomor=cutiData.beritaAcara.nomor:null
             cutiData.beritaAcara.tanggal?newCutiData.beritaAcara.tanggal=cutiData.beritaAcara.tanggal:null
         }
         
-        if (cutiData.fileSertifikatCuti!="") {
-          const uuidv4 = uuid.v4()
-          const path=`/cuti/file-sertifikat-cuti/${uuidv4}`
+        if (cutiData.fileSertifikatCuti) {
+          var path
+          if (existingCuti.fileSertifikatCuti) {
+            path=existingCuti.fileSertifikatCuti
+          }
+          else{
+            const uuidv4 = uuid.v4()
+            path=`/cuti/file-sertifikat-cuti/${uuidv4}`
+          }
           await this.uploadFile(path,cutiData.fileSertifikatCuti)
           newCutiData.fileSertifikatCuti=path
         }
 
-        if (cutiData.fileSkPejabatNegara!="") {
-          const uuidv4 = uuid.v4()
-          const path=`/cuti/file-sk-pejabat/${uuidv4}`
+        if (cutiData.fileSkPejabatNegara) {
+          var path
+          if (existingCuti.fileSkPejabatNegara) {
+            path=existingCuti.fileSkPejabatNegara
+          }
+          else{
+            const uuidv4 = uuid.v4()
+            path=`/cuti/file-sk-pejabat/${uuidv4}`
+          }
+
           await this.uploadFile(path,cutiData.fileSkPejabatNegara)
           newCutiData.fileSkPejabatNegara=path
         }
@@ -601,45 +626,86 @@ export class CutiService {
           newCutiData.notarisPenggantiSementara= new CutiNotarisPenggantiEntity()
             cutiData.notarisPenggantiSementara.nama?newCutiData.notarisPenggantiSementara.nama=cutiData.notarisPenggantiSementara.nama:null
             cutiData.notarisPenggantiSementara.email?newCutiData.notarisPenggantiSementara.email=cutiData.notarisPenggantiSementara.email:null
-            if (cutiData.notarisPenggantiSementara.fileFoto!="") {
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/notaris-pengganti-foto/${uuidv4}`
+            if (cutiData.notarisPenggantiSementara.fileFoto) {
+                var path
+                if (existingCuti.notarisPenggantiSementara.fileFoto) {
+                  path=existingCuti.notarisPenggantiSementara.fileFoto
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/notaris-pengganti-foto/${uuidv4}`
+                }
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileFoto)
                 newCutiData.notarisPenggantiSementara.fileFoto=path
             }
 
-            if (cutiData.notarisPenggantiSementara.fileKtp!="") {
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/notaris-pengganti-ktp/${uuidv4}`
+            if (cutiData.notarisPenggantiSementara.fileKtp) {
+                var path
+                if(existingCuti.notarisPenggantiSementara.fileKtp){
+                  path=existingCuti.notarisPenggantiSementara.fileKtp
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/notaris-pengganti-ktp/${uuidv4}`
+                }
+
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileKtp)
                 newCutiData.notarisPenggantiSementara.fileKtp=path
 
             }
 
-            if (cutiData.notarisPenggantiSementara.fileIjazah!="") {
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/notaris-pengganti-ijazah/${uuidv4}`
+            if (cutiData.notarisPenggantiSementara.fileIjazah) {
+                var path
+                  if(existingCuti.notarisPenggantiSementara.fileIjazah){
+                    path=existingCuti.notarisPenggantiSementara.fileIjazah
+                  }
+                  else{
+                    const uuidv4 = uuid.v4()
+                    path=`/cuti/notaris-pengganti-ijazah/${uuidv4}`
+                  }
+                
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileIjazah)
                 newCutiData.notarisPenggantiSementara.fileIjazah=path
             }
 
-            if (cutiData.notarisPenggantiSementara.fileSkck!="") {
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/notaris-pengganti-skck/${uuidv4}`
+            if (cutiData.notarisPenggantiSementara.fileSkck) {
+              var path
+                if (existingCuti.notarisPenggantiSementara.fileSkck) {
+                  path= existingCuti.notarisPenggantiSementara.fileSkck  
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/notaris-pengganti-skck/${uuidv4}`
+                }
+                
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileSkck)
                 newCutiData.notarisPenggantiSementara.fileSkck=path
             }
 
-            if (cutiData.notarisPenggantiSementara.fileRiwayatHidup!="") {
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/notaris-pengganti-riwayat-hidup/${uuidv4}`
+            if (cutiData.notarisPenggantiSementara.fileRiwayatHidup) {
+                var path
+                if (existingCuti.notarisPenggantiSementara.fileRiwayatHidup) {
+                  path=existingCuti.notarisPenggantiSementara.fileRiwayatHidup
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/notaris-pengganti-riwayat-hidup/${uuidv4}`
+                }
+
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileRiwayatHidup)
                 newCutiData.notarisPenggantiSementara.fileRiwayatHidup=path
             }
 
-            if (cutiData.notarisPenggantiSementara.fileKeteranganBerkerja!="") {
-                const uuidv4 = uuid.v4()
-                const path=`/cuti/notaris-pengganti-keterangan-bekerja/${uuidv4}`
+            if (cutiData.notarisPenggantiSementara.fileKeteranganBerkerja) {
+                var path
+                if (existingCuti.notarisPenggantiSementara.fileKeteranganBerkerja) {
+                  path=existingCuti.notarisPenggantiSementara.fileKeteranganBerkerja
+                }
+                else{
+                  const uuidv4 = uuid.v4()
+                  path=`/cuti/notaris-pengganti-keterangan-bekerja/${uuidv4}`
+                }
+
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileKeteranganBerkerja)
                 newCutiData.notarisPenggantiSementara.fileKeteranganBerkerja=path
             }
@@ -651,20 +717,6 @@ export class CutiService {
         }
         cutiData.voucherSimpadhu?newCutiData.voucherSimpadhu=cutiData.voucherSimpadhu:null
         newCutiData.userId=userId
-
-        const latestRecord = await this.cutiRepository
-          .createQueryBuilder('cuti')
-          .orderBy('cuti.tanggalPermohonan', 'DESC')
-          .getOne();
-        if (latestRecord) {
-          const pisah = latestRecord.nomorPermohonan.split("-")
-          const new_number=pisah[pisah.length-1]+1
-          newCutiData.nomorPermohonan=`${process.env.APP_FORMAT_NOMOR_CUTI}${new_number}`
-        }
-        else{
-          newCutiData.nomorPermohonan=`${process.env.APP_FORMAT_NOMOR_CUTI}1`
-        }
-
 
         await this.cutiRepository.update(id, newCutiData);
       
