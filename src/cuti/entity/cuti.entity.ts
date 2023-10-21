@@ -48,7 +48,7 @@ export class CutiEntity {
   statusPermohonan: number;
 
   @OneToOne(() => CutiSkPengangkatanPindahEntity, {eager:true})
-  // @JoinColumn()
+  @JoinColumn()
   skPengangkatan: CutiSkPengangkatanPindahEntity;
 
   @OneToOne(() => CutiBeritaAcaraEntity, { cascade:true })

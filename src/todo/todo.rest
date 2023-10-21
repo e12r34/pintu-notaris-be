@@ -18,7 +18,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/auth/login
+POST http://137.184.126.1/auth/login
 Content-Type: application/json
 
 {
@@ -90,4 +90,12 @@ Content-Type: application/json
 
 {
   "jenisLayanan": "Sample Service2"
+}
+
+POST http://137.184.126.1/cuti
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMmM2N2Y3LWQzYzQtNGFiNC04MDEzLTZkN2U5MTM0MDEwNyIsIm5hbWEiOiJOb3RhcmlzIDEiLCJ1c2VybmFtZSI6Im5vdGFyaXMxIiwicm9sZSI6WyJub3RhcmlzIl0sImlzQWN0aXZlIjp0cnVlLCJpYXQiOjE2OTc4NTIyNDksImV4cCI6MTY5Nzg1NDA0OX0.hU0e7LYMiiKH97uG_ky1pauuEKBb_L3e2BCxtXS8PyQ
+
+{
+  
 }
