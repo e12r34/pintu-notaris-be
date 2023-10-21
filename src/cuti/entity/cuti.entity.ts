@@ -38,7 +38,7 @@ export class CutiEntity {
   @Column()
   fileSertifikatCuti: string;
   
-  @Column()
+  @Column({default:""})
   fileSkPejabatNegara: string;
   
   @Column()
