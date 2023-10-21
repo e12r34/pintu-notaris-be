@@ -18,9 +18,12 @@ dotenv.config();
 
 @Injectable()
 export class CutiService {
-
     constructor(
         @InjectRepository(CutiEntity) private cutiRepository: Repository<CutiEntity>,
+        @InjectRepository(CutiBeritaAcaraEntity) private cutiBARepository: Repository<CutiBeritaAcaraEntity>,
+        @InjectRepository(CutiSkPengangkatanPindahEntity) private cutiSKRepository: Repository<CutiSkPengangkatanPindahEntity>,
+        @InjectRepository(CutiNotarisPemegangProtokolEntity) private cutiNotarisProtokolRepository: Repository<CutiNotarisPemegangProtokolEntity>,
+        @InjectRepository(CutiNotarisPenggantiEntity) private cutiNotarisPenggantiRepository: Repository<CutiNotarisPenggantiEntity>,
         @InjectRepository(User) private userRepository: Repository<User>,
         @InjectMinio() private readonly minioClient,
       ) {}
@@ -50,6 +53,7 @@ export class CutiService {
         }
       }
 
+      //Belum
       async Download(record: CutiEntity){
         if (record.skPengangkatan.file!="") {
           try {
@@ -168,6 +172,7 @@ export class CutiService {
         return record
       }
 
+      //Belum
       async Delete(record: CutiEntity){
         if (record.skPengangkatan.file!="") {
           try {
@@ -252,17 +257,6 @@ export class CutiService {
         const tanggalMulaiFormatDate = new Date(tanggalMulai);
         const tanggalSelesai=new Date(tanggalMulaiFormatDate.setMonth(tanggalMulaiFormatDate.getMonth() + cutiData.jangkaWaktu))
 
-        // console.log(tanggalMulai.getTime())
-        // console.log(tanggalMulaiFormatDate.getTime())
-        // if (tanggalMulai.getTime()<now) {
-        //     throw new BadRequestException("pengajuan cuti tidak boleh dalam waktu lampau")     
-        // }
-        // const results = await this.cutiRepository
-        // .createQueryBuilder('cuti')
-        // .where({userId})
-        // .where('cuti.tanggalSelesai < :tanggalMulai', { tanggalMulai })
-        // .orWhere('cuti.tanggalMulai > :tanggalSelesai', { tanggalSelesai })
-        // .getCount();
         const results = await this.cutiRepository
         .createQueryBuilder('cuti')
         .where({ userId })
@@ -308,9 +302,20 @@ export class CutiService {
             cutiData.beritaAcara.nomor?newCutiData.beritaAcara.nomor=cutiData.beritaAcara.nomor:null
             cutiData.beritaAcara.tanggal?newCutiData.beritaAcara.tanggal=cutiData.beritaAcara.tanggal:null
         }
-        
-        cutiData.fileSertifikatCuti?newCutiData.fileSertifikatCuti=cutiData.fileSertifikatCuti:null
-        cutiData.fileSkPejabatNegara?newCutiData.fileSkPejabatNegara=cutiData.fileSkPejabatNegara:null
+        if (cutiData.fileSertifikatCuti!="") {
+            const uuidv4 = uuid.v4()
+            const path=`/cuti/file-sertifikat-cuti/${uuidv4}`
+            await this.uploadFile(path,cutiData.fileSertifikatCuti)
+            newCutiData.fileSertifikatCuti=path
+        }
+
+        if (cutiData.fileSkPejabatNegara!="") {
+          const uuidv4 = uuid.v4()
+          const path=`/cuti/file-sk-pejabat/${uuidv4}`
+          await this.uploadFile(path,cutiData.fileSkPejabatNegara)
+          newCutiData.fileSkPejabatNegara=path
+        }
+
         if (cutiData.notarisPenggantiSementara) {
           newCutiData.notarisPenggantiSementara= new CutiNotarisPenggantiEntity()
             cutiData.notarisPenggantiSementara.nama?newCutiData.notarisPenggantiSementara.nama=cutiData.notarisPenggantiSementara.nama:null
@@ -327,7 +332,6 @@ export class CutiService {
                 const path=`/cuti/notaris-pengganti-ktp/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileKtp)
                 newCutiData.notarisPenggantiSementara.fileKtp=path
-
             }
 
             if (cutiData.notarisPenggantiSementara.fileIjazah!="") {
@@ -400,7 +404,6 @@ export class CutiService {
       async deleteFile(filePath:string){
         try{
           const bucketName=config.minioBucketName
-          console.log(filePath)
           await this.minioClient.removeObject(bucketName, filePath)
         }
         catch(err){
@@ -540,8 +543,19 @@ export class CutiService {
             cutiData.beritaAcara.tanggal?newCutiData.beritaAcara.tanggal=cutiData.beritaAcara.tanggal:null
         }
         
-        cutiData.fileSertifikatCuti?newCutiData.fileSertifikatCuti=cutiData.fileSertifikatCuti:null
-        cutiData.fileSkPejabatNegara?newCutiData.fileSkPejabatNegara=cutiData.fileSkPejabatNegara:null
+        if (cutiData.fileSertifikatCuti!="") {
+          const uuidv4 = uuid.v4()
+          const path=`/cuti/file-sertifikat-cuti/${uuidv4}`
+          await this.uploadFile(path,cutiData.fileSertifikatCuti)
+          newCutiData.fileSertifikatCuti=path
+        }
+
+        if (cutiData.fileSkPejabatNegara!="") {
+          const uuidv4 = uuid.v4()
+          const path=`/cuti/file-sk-pejabat/${uuidv4}`
+          await this.uploadFile(path,cutiData.fileSkPejabatNegara)
+          newCutiData.fileSkPejabatNegara=path
+        }
         if (cutiData.notarisPenggantiSementara) {
           newCutiData.notarisPenggantiSementara= new CutiNotarisPenggantiEntity()
             cutiData.notarisPenggantiSementara.nama?newCutiData.notarisPenggantiSementara.nama=cutiData.notarisPenggantiSementara.nama:null
@@ -617,9 +631,18 @@ export class CutiService {
       }
 
       async remove(id: string, userId:string): Promise<void> {
-        const existing_record = await this.findOne(id,userId,false);
-        this.Delete(existing_record)
-        await this.cutiRepository.delete(id);
+        try{
+          const existing_record = await this.findOne(id,userId,false);
+          this.Delete(existing_record)
+          await this.cutiBARepository.delete(existing_record.beritaAcara.id)
+          await this.cutiSKRepository.delete(existing_record.skPengangkatan.id)
+          await this.cutiNotarisProtokolRepository.delete(existing_record.notarisPemegangProtokol.id)
+          await this.cutiNotarisPenggantiRepository.delete(existing_record.notarisPenggantiSementara.id)
+          await this.cutiRepository.delete(id);
+        }
+        catch(err){
+          throw err
+        }
       }
 
       async submit(id:string, userId:string){

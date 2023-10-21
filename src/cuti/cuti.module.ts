@@ -7,13 +7,23 @@ import { redisStore } from 'cache-manager-redis-store';
 import { CutiController } from './cuti.controller';
 import * as dotenv  from 'dotenv';
 import { User } from 'src/auth/user.entity';
+import { CutiBeritaAcaraEntity } from './entity/cuti-berita-acara.entity';
+import { CutiNotarisPemegangProtokolEntity } from './entity/cuti-notaris-pemegang-protokol.entity';
+import { CutiNotarisPenggantiEntity } from './entity/cuti-notaris-pengganti.entity';
+import { CutiSkPengangkatanPindahEntity } from './entity/cuti-sk-pengangkatan.entity';
 
 dotenv.config();
 @Module({
   providers: [CutiService],
   controllers:[CutiController],
   imports:[
-    TypeOrmModule.forFeature([CutiEntity, User]),
+    TypeOrmModule.forFeature([
+      CutiEntity, 
+      User, 
+      CutiBeritaAcaraEntity, 
+      CutiNotarisPemegangProtokolEntity, 
+      CutiNotarisPenggantiEntity, 
+      CutiSkPengangkatanPindahEntity]),
         CacheModule.register({
             // @ts-ignore
             store: async () => await redisStore({
