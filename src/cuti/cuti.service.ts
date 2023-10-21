@@ -527,35 +527,41 @@ export class CutiService {
       }
 
       async update(id: string, cutiData: DtoCutiRequest, userId: string): Promise<CutiEntity> {
-        const tanggalMulai = cutiData.tanggalMulai;
-        const now = Date.now();
-        const tanggalMulaiFormatDate = new Date(tanggalMulai);
-        const tanggalSelesai=new Date(tanggalMulaiFormatDate.setMonth(tanggalMulaiFormatDate.getMonth() + cutiData.jangkaWaktu))
+        var tanggalSelesai,tanggalMulai, results
+        if (cutiData.tanggalMulai) {
+          tanggalMulai = cutiData.tanggalMulai;
+          const now = Date.now();
+          const tanggalMulaiFormatDate = new Date(tanggalMulai);
+          tanggalSelesai=new Date(tanggalMulaiFormatDate.setMonth(tanggalMulaiFormatDate.getMonth() + cutiData.jangkaWaktu))         
+          results = await this.cutiRepository
+          .createQueryBuilder('cuti')
+          .where({ userId })
+          .andWhere('(\
+            (:tanggalMulai >= cuti.tanggalMulai AND :tanggalMulai <= cuti.TanggalSelesai) \
+            OR \
+            (:tanggalSelesai >= cuti.tanggalMulai AND :tanggalSelesai <= cuti.TanggalSelesai)\
+          )', { tanggalMulai, tanggalSelesai })
+          .getCount();
+          if(results>0)
+          {
+            throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
+          }
+        }
+ 
         
         // console.log(tanggalMulai.getTime())
         // console.log(tanggalMulaiFormatDate.getTime())
         // if (tanggalMulai.getTime()<now) {
         //     throw new BadRequestException("pengajuan cuti tidak boleh dalam waktu lampau")     
         // }
-        const results = await this.cutiRepository
-        .createQueryBuilder('cuti')
-        .where({ userId })
-        .andWhere('(\
-          (:tanggalMulai >= cuti.tanggalMulai AND :tanggalMulai <= cuti.TanggalSelesai) \
-          OR \
-          (:tanggalSelesai >= cuti.tanggalMulai AND :tanggalSelesai <= cuti.TanggalSelesai)\
-        )', { tanggalMulai, tanggalSelesai })
-        .getCount();
         
-        if(results>0)
-        {
-          throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
-        }
+        
+
 
         const existingCuti= await this.findOne(id, userId,false);
 
         var newCutiData= new CutiEntity()
-        newCutiData.tanggalSelesai=tanggalSelesai
+        tanggalSelesai?newCutiData.tanggalSelesai=tanggalSelesai:null
         cutiData.tanggalMulai ? newCutiData.tanggalMulai= cutiData.tanggalMulai:null
         cutiData.jangkaWaktu ? newCutiData.jangkaWaktu= cutiData.jangkaWaktu:null
         cutiData.alasanCuti? newCutiData.alasanCuti=cutiData.alasanCuti:null
