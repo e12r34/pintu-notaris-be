@@ -63,7 +63,35 @@ export class CutiService {
               record.skPengangkatan.file=result.content
             } else {
               // Handle the case where the file doesn't exist or there's an error
-              throw new NotFoundException('File not found');
+              throw new NotFoundException('File SK Pengangkatan not found');
+            }
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.fileSertifikatCuti!="") {
+          try {
+            const result = await this.downloadAndEncodeFile(record.fileSertifikatCuti);
+            if (result) {
+              // Send the JSON object as a response
+              record.fileSertifikatCuti=result.content
+            } else {
+              // Handle the case where the file doesn't exist or there's an error
+              throw new NotFoundException('File Sertifikat Cuti not found');
+            }
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.fileSkPejabatNegara!="") {
+          try {
+            const result = await this.downloadAndEncodeFile(record.fileSkPejabatNegara);
+            if (result) {
+              // Send the JSON object as a response
+              record.fileSkPejabatNegara=result.content
+            } else {
+              // Handle the case where the file doesn't exist or there's an error
+              throw new NotFoundException('File SK Pejabat Negara not found');
             }
           } catch (error) {
             throw error;
@@ -77,7 +105,7 @@ export class CutiService {
               record.beritaAcara.file=result.content
             } else {
               // Handle the case where the file doesn't exist or there's an error
-              throw new NotFoundException('File not found');
+              throw new NotFoundException('File BA not found');
             }
           } catch (error) {
             throw error;
@@ -91,7 +119,7 @@ export class CutiService {
               record.notarisPenggantiSementara.fileFoto=result.content
             } else {
               // Handle the case where the file doesn't exist or there's an error
-              throw new NotFoundException('File not found');
+              throw new NotFoundException('File Foto Notaris Pengganti not found');
             }
           } catch (error) {
             throw error;
@@ -105,7 +133,7 @@ export class CutiService {
               record.notarisPenggantiSementara.fileKtp=result.content
             } else {
               // Handle the case where the file doesn't exist or there's an error
-              throw new NotFoundException('File not found');
+              throw new NotFoundException('File KTP Notaris Penggantinot found');
             }
           } catch (error) {
             throw error;
@@ -119,7 +147,7 @@ export class CutiService {
               record.notarisPenggantiSementara.fileIjazah=result.content
             } else {
               // Handle the case where the file doesn't exist or there's an error
-              throw new NotFoundException('File not found');
+              throw new NotFoundException('File Ijazah Notaris Pengganti not found');
             }
           } catch (error) {
             throw error;
@@ -133,7 +161,7 @@ export class CutiService {
               record.notarisPenggantiSementara.fileSkck=result.content
             } else {
               // Handle the case where the file doesn't exist or there's an error
-              throw new NotFoundException('File not found');
+              throw new NotFoundException('File SKCK Notaris Pengganti not found');
             }
           } catch (error) {
             throw error;
@@ -147,7 +175,7 @@ export class CutiService {
               record.notarisPenggantiSementara.fileRiwayatHidup=result.content
             } else {
               // Handle the case where the file doesn't exist or there's an error
-              throw new NotFoundException('File not found');
+              throw new NotFoundException('File Riwayat Hidup Notaris Pengganti not found');
             }
           } catch (error) {
             throw error;
@@ -161,7 +189,7 @@ export class CutiService {
               record.notarisPenggantiSementara.fileKeteranganBerkerja=result.content
             } else {
               // Handle the case where the file doesn't exist or there's an error
-              throw new NotFoundException('File not found');
+              throw new NotFoundException('File Keterangan Bekerja Notaris Pengganti not found');
             }
           } catch (error) {
             throw error;
@@ -172,11 +200,24 @@ export class CutiService {
         return record
       }
 
-      //Belum
       async Delete(record: CutiEntity){
         if (record.skPengangkatan.file!="") {
           try {
             this.deleteFile(record.skPengangkatan.file);
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.fileSertifikatCuti!="") {
+          try {
+            this.deleteFile(record.fileSertifikatCuti);
+          } catch (error) {
+            throw error;
+          }
+        }
+        if (record.fileSkPejabatNegara!="") {
+          try {
+            this.deleteFile(record.fileSkPejabatNegara);
           } catch (error) {
             throw error;
           }
