@@ -31,6 +31,6 @@ export class CutiNotarisPenggantiEntity {
     @Column({default:""})
     fileKeteranganBerkerja: string;
 
-    @OneToOne(() => CutiEntity, (cuti) => cuti.skPengangkatan)
-    cuti: CutiEntity;
+    // @OneToOne(() => CutiEntity, (cuti) => cuti.skPengangkatan)
+    // cuti: CutiEntity;
 }

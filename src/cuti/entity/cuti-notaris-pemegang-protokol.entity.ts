@@ -13,6 +13,6 @@ export class CutiNotarisPemegangProtokolEntity {
     @Column()
     alamat: string;
 
-    @OneToOne(() => CutiEntity, (cuti) => cuti.skPengangkatan)
-    cuti: CutiEntity;
+    // @OneToOne(() => CutiEntity, (cuti) => cuti.skPengangkatan)
+    // cuti: CutiEntity;
 }

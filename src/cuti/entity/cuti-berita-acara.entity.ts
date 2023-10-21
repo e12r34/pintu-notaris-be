@@ -16,6 +16,6 @@ export class CutiBeritaAcaraEntity {
     @Column()
     file: string;
   
-    @OneToOne(() => CutiEntity, (cuti) => cuti.skPengangkatan)
-    cuti: CutiEntity;
+    // @OneToOne(() => CutiEntity, (cuti) => cuti.beritaAcara)
+    // cuti: CutiEntity;
 }
