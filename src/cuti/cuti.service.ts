@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException, Delete } from '@nestjs/common';
 import { InjectMinio } from 'nestjs-minio';
 import { CutiEntity } from './entity/cuti.entity';
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DtoCutiFindAllRequest, DtoCutiFindAllResponse, DtoCutiFindAllResponseData, DtoCutiRequest } from './cuti.dto';
 import * as uuid from 'uuid';
@@ -55,7 +55,7 @@ export class CutiService {
 
       //Belum
       async Download(record: CutiEntity){
-        if (record.skPengangkatan.file!="") {
+        if (record.skPengangkatan.file) {
           try {
             const result = await this.downloadAndEncodeFile(record.skPengangkatan.file);
             if (result) {
@@ -69,7 +69,7 @@ export class CutiService {
             throw error;
           }
         }
-        if (record.fileSertifikatCuti!="") {
+        if (record.fileSertifikatCuti) {
           try {
             const result = await this.downloadAndEncodeFile(record.fileSertifikatCuti);
             if (result) {
@@ -83,7 +83,7 @@ export class CutiService {
             throw error;
           }
         }
-        if (record.fileSkPejabatNegara!="") {
+        if (record.fileSkPejabatNegara) {
           try {
             const result = await this.downloadAndEncodeFile(record.fileSkPejabatNegara);
             if (result) {
@@ -97,7 +97,7 @@ export class CutiService {
             throw error;
           }
         }
-        if (record.beritaAcara.file!="") {
+        if (record.beritaAcara.file) {
           try {
             const result = await this.downloadAndEncodeFile(record.beritaAcara.file);
             if (result) {
@@ -111,7 +111,7 @@ export class CutiService {
             throw error;
           }
         }
-        if (record.notarisPenggantiSementara.fileFoto!="") {
+        if (record.notarisPenggantiSementara.fileFoto) {
           try {
             const result = await this.downloadAndEncodeFile(record.notarisPenggantiSementara.fileFoto);
             if (result) {
@@ -125,7 +125,7 @@ export class CutiService {
             throw error;
           }
         }
-        if (record.notarisPenggantiSementara.fileKtp!="") {
+        if (record.notarisPenggantiSementara.fileKtp) {
           try {
             const result = await this.downloadAndEncodeFile(record.notarisPenggantiSementara.fileKtp);
             if (result) {
@@ -139,7 +139,7 @@ export class CutiService {
             throw error;
           }
         }
-        if (record.notarisPenggantiSementara.fileIjazah!="") {
+        if (record.notarisPenggantiSementara.fileIjazah) {
           try {
             const result = await this.downloadAndEncodeFile(record.notarisPenggantiSementara.fileIjazah);
             if (result) {
@@ -153,7 +153,7 @@ export class CutiService {
             throw error;
           }
         }
-        if (record.notarisPenggantiSementara.fileSkck!="") {
+        if (record.notarisPenggantiSementara.fileSkck) {
           try {
             const result = await this.downloadAndEncodeFile(record.notarisPenggantiSementara.fileSkck);
             if (result) {
@@ -167,7 +167,7 @@ export class CutiService {
             throw error;
           }
         }
-        if (record.notarisPenggantiSementara.fileRiwayatHidup!="") {
+        if (record.notarisPenggantiSementara.fileRiwayatHidup) {
           try {
             const result = await this.downloadAndEncodeFile(record.notarisPenggantiSementara.fileRiwayatHidup);
             if (result) {
@@ -181,7 +181,7 @@ export class CutiService {
             throw error;
           }
         }
-        if (record.notarisPenggantiSementara.fileKeteranganBerkerja!="") {
+        if (record.notarisPenggantiSementara.fileKeteranganBerkerja) {
           try {
             const result = await this.downloadAndEncodeFile(record.notarisPenggantiSementara.fileKeteranganBerkerja);
             if (result) {
@@ -201,70 +201,70 @@ export class CutiService {
       }
 
       async Delete(record: CutiEntity){
-        if (record.skPengangkatan.file!="") {
+        if (record.skPengangkatan.file) {
           try {
             this.deleteFile(record.skPengangkatan.file);
           } catch (error) {
             throw error;
           }
         }
-        if (record.fileSertifikatCuti!="") {
+        if (record.fileSertifikatCuti) {
           try {
             this.deleteFile(record.fileSertifikatCuti);
           } catch (error) {
             throw error;
           }
         }
-        if (record.fileSkPejabatNegara!="") {
+        if (record.fileSkPejabatNegara) {
           try {
             this.deleteFile(record.fileSkPejabatNegara);
           } catch (error) {
             throw error;
           }
         }
-        if (record.beritaAcara.file!="") {
+        if (record.beritaAcara.file) {
           try {
             this.deleteFile(record.beritaAcara.file);
           } catch (error) {
             throw error;
           }
         }
-        if (record.notarisPenggantiSementara.fileFoto!="") {
+        if (record.notarisPenggantiSementara.fileFoto) {
           try {
             this.deleteFile(record.notarisPenggantiSementara.fileFoto);
           } catch (error) {
             throw error;
           }
         }
-        if (record.notarisPenggantiSementara.fileKtp!="") {
+        if (record.notarisPenggantiSementara.fileKtp) {
           try {
             this.deleteFile(record.notarisPenggantiSementara.fileKtp);
           } catch (error) {
             throw error;
           }
         }
-        if (record.notarisPenggantiSementara.fileIjazah!="") {
+        if (record.notarisPenggantiSementara.fileIjazah) {
           try {
             this.deleteFile(record.notarisPenggantiSementara.fileIjazah);
           } catch (error) {
             throw error;
           }
         }
-        if (record.notarisPenggantiSementara.fileSkck!="") {
+        if (record.notarisPenggantiSementara.fileSkck) {
           try {
             this.deleteFile(record.notarisPenggantiSementara.fileSkck);
           } catch (error) {
             throw error;
           }
         }
-        if (record.notarisPenggantiSementara.fileRiwayatHidup!="") {
+        if (record.notarisPenggantiSementara.fileRiwayatHidup) {
           try {
             this.deleteFile(record.notarisPenggantiSementara.fileRiwayatHidup);
           } catch (error) {
             throw error;
           }
         }
-        if (record.notarisPenggantiSementara.fileKeteranganBerkerja!="") {
+        if (record.notarisPenggantiSementara.fileKeteranganBerkerja) {
           try {
             this.deleteFile(record.notarisPenggantiSementara.fileKeteranganBerkerja);
           } catch (error) {
@@ -322,7 +322,7 @@ export class CutiService {
         cutiData.jenisLayanan? newCutiData.jenisLayanan=cutiData.jenisLayanan:null
         if(cutiData.skPengangkatan){
             newCutiData.skPengangkatan= new CutiSkPengangkatanPindahEntity()
-            if(cutiData.skPengangkatan.file!=""){
+            if(cutiData.skPengangkatan.file){
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/sk-pengangkatan/${uuidv4}.pdf`
                 await this.uploadFile(path,cutiData.skPengangkatan.file)
@@ -334,7 +334,7 @@ export class CutiService {
         }
         if(cutiData.beritaAcara) {
             newCutiData.beritaAcara =  new CutiBeritaAcaraEntity()
-            if(cutiData.beritaAcara.file!=""){
+            if(cutiData.beritaAcara.file){
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/berita-acara/${uuidv4}.pdf`
                 await this.uploadFile(path,cutiData.beritaAcara.file)
@@ -343,14 +343,14 @@ export class CutiService {
             cutiData.beritaAcara.nomor?newCutiData.beritaAcara.nomor=cutiData.beritaAcara.nomor:null
             cutiData.beritaAcara.tanggal?newCutiData.beritaAcara.tanggal=cutiData.beritaAcara.tanggal:null
         }
-        if (cutiData.fileSertifikatCuti!="") {
+        if (cutiData.fileSertifikatCuti) {
             const uuidv4 = uuid.v4()
             const path=`/cuti/file-sertifikat-cuti/${uuidv4}`
             await this.uploadFile(path,cutiData.fileSertifikatCuti)
             newCutiData.fileSertifikatCuti=path
         }
 
-        if (cutiData.fileSkPejabatNegara!="") {
+        if (cutiData.fileSkPejabatNegara) {
           const uuidv4 = uuid.v4()
           const path=`/cuti/file-sk-pejabat/${uuidv4}`
           await this.uploadFile(path,cutiData.fileSkPejabatNegara)
@@ -361,42 +361,42 @@ export class CutiService {
           newCutiData.notarisPenggantiSementara= new CutiNotarisPenggantiEntity()
             cutiData.notarisPenggantiSementara.nama?newCutiData.notarisPenggantiSementara.nama=cutiData.notarisPenggantiSementara.nama:null
             cutiData.notarisPenggantiSementara.email?newCutiData.notarisPenggantiSementara.email=cutiData.notarisPenggantiSementara.email:null
-            if (cutiData.notarisPenggantiSementara.fileFoto!="") {
+            if (cutiData.notarisPenggantiSementara.fileFoto) {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-foto/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileFoto)
                 newCutiData.notarisPenggantiSementara.fileFoto=path
             }
 
-            if (cutiData.notarisPenggantiSementara.fileKtp!="") {
+            if (cutiData.notarisPenggantiSementara.fileKtp) {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-ktp/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileKtp)
                 newCutiData.notarisPenggantiSementara.fileKtp=path
             }
 
-            if (cutiData.notarisPenggantiSementara.fileIjazah!="") {
+            if (cutiData.notarisPenggantiSementara.fileIjazah) {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-ijazah/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileIjazah)
                 newCutiData.notarisPenggantiSementara.fileIjazah=path
             }
 
-            if (cutiData.notarisPenggantiSementara.fileSkck!="") {
+            if (cutiData.notarisPenggantiSementara.fileSkck) {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-skck/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileSkck)
                 newCutiData.notarisPenggantiSementara.fileSkck=path
             }
 
-            if (cutiData.notarisPenggantiSementara.fileRiwayatHidup!="") {
+            if (cutiData.notarisPenggantiSementara.fileRiwayatHidup) {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-riwayat-hidup/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileRiwayatHidup)
                 newCutiData.notarisPenggantiSementara.fileRiwayatHidup=path
             }
 
-            if (cutiData.notarisPenggantiSementara.fileKeteranganBerkerja!="") {
+            if (cutiData.notarisPenggantiSementara.fileKeteranganBerkerja) {
                 const uuidv4 = uuid.v4()
                 const path=`/cuti/notaris-pengganti-keterangan-bekerja/${uuidv4}`
                 await this.uploadFile(path,cutiData.notarisPenggantiSementara.fileKeteranganBerkerja)
@@ -535,7 +535,9 @@ export class CutiService {
           tanggalSelesai=new Date(tanggalMulaiFormatDate.setMonth(tanggalMulaiFormatDate.getMonth() + cutiData.jangkaWaktu))         
           results = await this.cutiRepository
           .createQueryBuilder('cuti')
-          .where({ userId })
+          .where({ 
+            userId,
+            id:Not(id) })
           .andWhere('(\
             (:tanggalMulai >= cuti.tanggalMulai AND :tanggalMulai <= cuti.TanggalSelesai) \
             OR \
