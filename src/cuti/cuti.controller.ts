@@ -70,16 +70,16 @@ export class CutiController {
                 stringPencarian:stringPencarian,
                 sortBy:sortBy
             }
-            const cachedKonditeEntries = await this.cacheManager.get<DtoCutiFindAllResponse[]>(generateCacheKeyCuti(this.userId,null,body));
-            if (cachedKonditeEntries) {
-                return res.json(cachedKonditeEntries);
-            }
+            // const cachedKonditeEntries = await this.cacheManager.get<DtoCutiFindAllResponse[]>(generateCacheKeyCuti(this.userId,null,body));
+            // if (cachedKonditeEntries) {
+            //     return res.json(cachedKonditeEntries);
+            // }
             this.userId=req.user['id']
             if (!this.userId) {
                 throw new UnauthorizedException('No user id found');
             }
             const cutiEntries = await this.cutiService.findAll(this.userId,body);
-            await this.cacheManager.set(generateCacheKeyCuti(this.userId,null,body), cutiEntries, 30);
+            // await this.cacheManager.set(generateCacheKeyCuti(this.userId,null,body), cutiEntries, 30);
             res.json(cutiEntries);
             
         }
