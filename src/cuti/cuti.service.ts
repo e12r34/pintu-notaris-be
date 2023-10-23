@@ -736,9 +736,9 @@ export class CutiService {
         }
         cutiData.voucherSimpadhu?newCutiData.voucherSimpadhu=cutiData.voucherSimpadhu:null
         newCutiData.userId=userId
-
+        console.log("ccc")
         await this.cutiRepository.update(id, newCutiData);
-      
+        console.log("ddd")
         return this.findOne(id, userId,true);
       }
 
