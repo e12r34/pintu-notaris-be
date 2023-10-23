@@ -527,6 +527,7 @@ export class CutiService {
       }
 
       async update(id: string, cutiData: DtoCutiRequest, userId: string): Promise<CutiEntity> {
+        console.log("1")
         var tanggalSelesai,tanggalMulai, results
         if (cutiData.tanggalMulai) {
           tanggalMulai = cutiData.tanggalMulai;
@@ -544,6 +545,7 @@ export class CutiService {
             (:tanggalSelesai >= cuti.tanggalMulai AND :tanggalSelesai <= cuti.TanggalSelesai)\
           )', { tanggalMulai, tanggalSelesai })
           .getCount();
+          console.log("2")
           if(results>0)
           {
             throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
@@ -559,7 +561,7 @@ export class CutiService {
         
         
 
-
+        console.log("3")
         const existingCuti= await this.findOne(id, userId,false);
 
         if (existingCuti.statusPermohonan>0) {
@@ -574,7 +576,9 @@ export class CutiService {
         cutiData.jenisLayanan? newCutiData.jenisLayanan=cutiData.jenisLayanan:null
         if(cutiData.skPengangkatan){
             newCutiData.skPengangkatan= new CutiSkPengangkatanPindahEntity()
+            console.log("4")
             if(cutiData.skPengangkatan.file){
+                console.log("5")
                 var path
                 if (existingCuti.skPengangkatan.file) {
                   path=existingCuti.skPengangkatan.file                  
