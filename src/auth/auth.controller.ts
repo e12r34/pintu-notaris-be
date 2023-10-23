@@ -66,7 +66,8 @@ export class AuthController {
         })
     @Post('refresh-token')
     async refreshToken(@Body() refreshDto: refreshDto ) : Promise<LoginResultDto> {
-        if (!refreshDto.refreshToken) {
+        try{
+            if (!refreshDto.refreshToken) {
             throw new BadRequestException("No refresh token provided!")
         }
         const token= await this.authService.refreshToken(refreshDto.refreshToken);
@@ -75,6 +76,11 @@ export class AuthController {
             ...token
         }
     }
+    catch(err){
+        throw err
+    }
+    }
+
   
     // @Post('register')
     // async register(): Promise<{ token: string }> {

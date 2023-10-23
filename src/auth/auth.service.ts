@@ -17,6 +17,9 @@ export class AuthService {
     ) {}
 
   async refreshToken(token:string){
+    try{
+
+    
     const payload = await this.jwtService.verifyAsync(
       token,
       {
@@ -38,6 +41,10 @@ export class AuthService {
         }),
       refreshToken: token
   };
+  }
+  catch(err){
+    throw err
+  }
   }
 
   async login(username: string, password: string) {

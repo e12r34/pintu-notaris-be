@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
-import { CutiEntity } from './cuti.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 
 @Entity() // Make sure the name matches your table name in the database
@@ -13,7 +12,7 @@ export class CutiSkPengangkatanPindahEntity {
     @Column({ type: 'date' })
     tanggal: Date;
   
-    @Column()
+    @Column({default:""})
     file: string;
   
     // @OneToOne(() => CutiEntity, (cuti) => cuti.skPengangkatan,{eager:true, onDelete:'CASCADE'})
