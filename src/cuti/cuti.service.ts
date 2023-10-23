@@ -435,7 +435,6 @@ export class CutiService {
         // cutiData.notarisPenggantiSementara.fileSkck?cuti.notarisPenggantiSementara.fileSkck=cutiData.notarisPenggantiSementara.fileSkck:null
         // cutiData.notarisPenggantiSementara.fileKeteranganBerkerja?cuti.notarisPenggantiSementara.fileKeteranganBerkerja=cutiData.notarisPenggantiSementara.fileKeteranganBerkerja:null
         
-        // console.log('2')
         return this.findOne(cuti.id,userId,true)
         
       }
@@ -527,7 +526,6 @@ export class CutiService {
       }
 
       async update(id: string, cutiData: DtoCutiRequest, userId: string): Promise<CutiEntity> {
-        console.log("1")
         var tanggalSelesai,tanggalMulai, results
         if (cutiData.tanggalMulai) {
           tanggalMulai = cutiData.tanggalMulai;
@@ -545,7 +543,6 @@ export class CutiService {
             (:tanggalSelesai >= cuti.tanggalMulai AND :tanggalSelesai <= cuti.TanggalSelesai)\
           )', { tanggalMulai, tanggalSelesai })
           .getCount();
-          console.log("2")
           if(results>0)
           {
             throw new BadRequestException("Pengajuan cuti anda berbenturan dengan pengajuan cuti yang sudah ada, harap pastikan tanggalMulai dan lamaCuti")
@@ -561,7 +558,6 @@ export class CutiService {
         
         
 
-        console.log("3")
         const existingCuti= await this.findOne(id, userId,false);
 
         if (existingCuti.statusPermohonan>0) {
@@ -576,9 +572,7 @@ export class CutiService {
         cutiData.jenisLayanan? newCutiData.jenisLayanan=cutiData.jenisLayanan:null
         if(cutiData.skPengangkatan){
             newCutiData.skPengangkatan= new CutiSkPengangkatanPindahEntity()
-            console.log("4")
             if(cutiData.skPengangkatan.file){
-                console.log("5")
                 var path
                 if (existingCuti.skPengangkatan.file) {
                   path=existingCuti.skPengangkatan.file                  
@@ -587,12 +581,8 @@ export class CutiService {
                   const uuidv4 = uuid.v4()
                   path=`/cuti/sk-pengangkatan/${uuidv4}.pdf`  
                 }
-                console.log(cutiData.skPengangkatan.file)
                 await this.uploadFile(path,cutiData.skPengangkatan.file)
-                console.log("aaa")
-                console.log(path)
                 newCutiData.skPengangkatan.file=path
-                console.log("bbb")
             }
             cutiData.skPengangkatan.nomor?newCutiData.skPengangkatan.nomor=cutiData.skPengangkatan.nomor:null
             cutiData.skPengangkatan.tanggal?newCutiData.skPengangkatan.tanggal=cutiData.skPengangkatan.tanggal:null
@@ -736,10 +726,8 @@ export class CutiService {
         }
         cutiData.voucherSimpadhu?newCutiData.voucherSimpadhu=cutiData.voucherSimpadhu:null
         newCutiData.userId=userId
-        console.log("ccc")
         newCutiData.id=id
         await this.cutiRepository.save(newCutiData);
-        console.log("ddd")
         return this.findOne(id, userId,true);
       }
 
