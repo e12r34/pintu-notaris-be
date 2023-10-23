@@ -587,9 +587,12 @@ export class CutiService {
                   const uuidv4 = uuid.v4()
                   path=`/cuti/sk-pengangkatan/${uuidv4}.pdf`  
                 }
+                console.log(cutiData.skPengangkatan.file)
                 await this.uploadFile(path,cutiData.skPengangkatan.file)
                 console.log("aaa")
+                console.log(path)
                 newCutiData.skPengangkatan.file=path
+                console.log("bbb")
             }
             cutiData.skPengangkatan.nomor?newCutiData.skPengangkatan.nomor=cutiData.skPengangkatan.nomor:null
             cutiData.skPengangkatan.tanggal?newCutiData.skPengangkatan.tanggal=cutiData.skPengangkatan.tanggal:null
