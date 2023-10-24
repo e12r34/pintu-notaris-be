@@ -536,6 +536,7 @@ export class CutiService {
       }
 
       async update(id: string, cutiData: DtoCutiRequest, userId: string): Promise<CutiEntity> {
+        console.log(cutiData)
         var tanggalSelesai,tanggalMulai, results
         if (cutiData.tanggalMulai) {
           tanggalMulai = cutiData.tanggalMulai;
@@ -574,14 +575,16 @@ export class CutiService {
           throw new BadRequestException("Tidak Bisa Mengubah Permohonan Cuti karena sudah di submit")
         }
 
-        var newCutiData= new CutiEntity()
+        // var newCutiData= new CutiEntity()
+        var newCutiData : any ={}
         tanggalSelesai?newCutiData.tanggalSelesai=tanggalSelesai:null
         cutiData.tanggalMulai ? newCutiData.tanggalMulai= cutiData.tanggalMulai:null
         cutiData.jangkaWaktu ? newCutiData.jangkaWaktu= cutiData.jangkaWaktu:null
         cutiData.alasanCuti? newCutiData.alasanCuti=cutiData.alasanCuti:null
         cutiData.jenisLayanan? newCutiData.jenisLayanan=cutiData.jenisLayanan:null
         if(cutiData.skPengangkatan){
-            newCutiData.skPengangkatan= new CutiSkPengangkatanPindahEntity()
+            // newCutiData.skPengangkatan= new CutiSkPengangkatanPindahEntity()
+            newCutiData.skPengangkatan= {}
             if(cutiData.skPengangkatan.file){
                 var path
                 if (existingCuti.skPengangkatan.file) {
@@ -598,7 +601,8 @@ export class CutiService {
             cutiData.skPengangkatan.tanggal?newCutiData.skPengangkatan.tanggal=cutiData.skPengangkatan.tanggal:null
         }
         if(cutiData.beritaAcara) {
-            newCutiData.beritaAcara =  new CutiBeritaAcaraEntity()
+            // newCutiData.beritaAcara =  new CutiBeritaAcaraEntity()
+            newCutiData.beritaAcara =  {}
             if(cutiData.beritaAcara.file){
                 var path
                 if (existingCuti.beritaAcara.file) {
@@ -642,7 +646,8 @@ export class CutiService {
           newCutiData.fileSkPejabatNegara=path
         }
         if (cutiData.notarisPenggantiSementara) {
-          newCutiData.notarisPenggantiSementara= new CutiNotarisPenggantiEntity()
+          // newCutiData.notarisPenggantiSementara= new CutiNotarisPenggantiEntity()
+          newCutiData.notarisPenggantiSementara= {}
             cutiData.notarisPenggantiSementara.nama?newCutiData.notarisPenggantiSementara.nama=cutiData.notarisPenggantiSementara.nama:null
             cutiData.notarisPenggantiSementara.email?newCutiData.notarisPenggantiSementara.email=cutiData.notarisPenggantiSementara.email:null
             if (cutiData.notarisPenggantiSementara.fileFoto) {
@@ -730,7 +735,8 @@ export class CutiService {
             }
         }
         if (cutiData.notarisPemegangProtokol) {
-          newCutiData.notarisPemegangProtokol=new CutiNotarisPemegangProtokolEntity()
+          // newCutiData.notarisPemegangProtokol=new CutiNotarisPemegangProtokolEntity()
+            newCutiData.notarisPemegangProtokol={}
             cutiData.notarisPemegangProtokol.nama?newCutiData.notarisPemegangProtokol.nama=cutiData.notarisPemegangProtokol.nama:null
             cutiData.notarisPemegangProtokol.alamat?newCutiData.notarisPemegangProtokol.alamat=cutiData.notarisPemegangProtokol.alamat:null
         }

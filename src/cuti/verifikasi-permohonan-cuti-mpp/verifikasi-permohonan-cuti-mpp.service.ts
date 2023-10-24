@@ -2,24 +2,16 @@ import config from 'src/config';
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CutiEntity } from '../entity/cuti.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CutiBeritaAcaraEntity } from '../entity/cuti-berita-acara.entity';
-import { CutiSkPengangkatanPindahEntity } from '../entity/cuti-sk-pengangkatan.entity';
-import { CutiNotarisPemegangProtokolEntity } from '../entity/cuti-notaris-pemegang-protokol.entity';
-import { CutiNotarisPenggantiEntity } from '../entity/cuti-notaris-pengganti.entity';
 import { User } from 'src/auth/user.entity';
-import { Repository, LessThan } from 'typeorm';
+import { Repository, MoreThan } from 'typeorm';
 import { InjectMinio } from 'nestjs-minio';
 import { DtoCutiVerifFindAllRequest, DtoCutiVerifFindAllResponse, DtoCutiVerifFindAllResponseData } from '../dto/verifikasi-permohonan-cuti.dto';
-import { DtoCutiRejectMPD } from './verifikasi-permohonan-cuti-mpd.dto';
+import { DtoCutiRejectMPP } from './verifikasi-permohonan-cuti-mpp.dto';
 
 @Injectable()
-export class VerifikasiPermohonanCutiMpdService {
+export class VerifikasiPermohonanCutiMppService {
     constructor(
         @InjectRepository(CutiEntity) private cutiRepository: Repository<CutiEntity>,
-        @InjectRepository(CutiBeritaAcaraEntity) private cutiBARepository: Repository<CutiBeritaAcaraEntity>,
-        @InjectRepository(CutiSkPengangkatanPindahEntity) private cutiSKRepository: Repository<CutiSkPengangkatanPindahEntity>,
-        @InjectRepository(CutiNotarisPemegangProtokolEntity) private cutiNotarisProtokolRepository: Repository<CutiNotarisPemegangProtokolEntity>,
-        @InjectRepository(CutiNotarisPenggantiEntity) private cutiNotarisPenggantiRepository: Repository<CutiNotarisPenggantiEntity>,
         @InjectRepository(User) private userRepository: Repository<User>,
         @InjectMinio() private readonly minioClient,
       ) {}
@@ -203,11 +195,13 @@ export class VerifikasiPermohonanCutiMpdService {
             {
               isSubmit:true,
               jenisLayanan:0,
-              jangkaWaktu:LessThan(6)
+              statusPermohonan:2,
+              jangkaWaktu:MoreThan(12)
             },
             {
               isSubmit:true,
-              jenisLayanan:1
+              jenisLayanan:1,
+              statusPermohonan:3
             }
           ],
           // relations: ['skPengangkatanPindah', 'beritaAcaraSumpah', 'suratPernyataanJumlahAktaNotaris', 'suratPernyataanPemegangProtokol'],
@@ -232,11 +226,9 @@ export class VerifikasiPermohonanCutiMpdService {
         // const totalCount = await this.cutiRepository.count();
         const totalCount = await this.cutiRepository.createQueryBuilder('cuti')
         .where('(\
-          (cuti.statusPermohonan = 1) \
-          AND\
-            (((cuti.jangkaWaktu < 6) AND (cuti.jenisLayanan = 0))\
+          ((cuti.statusPermohonan = 1) AND (cuti.jangkaWaktu > 12) AND (cuti.jenisLayanan = 0))\
             OR \
-            (cuti.jenisLayanan=1))\
+            ((cuti.jenisLayanan=1) AND (cuti.statusPermohonan=2))\
           )').getCount();
         const keluaran_lengkap:DtoCutiVerifFindAllResponse ={
           data: keluaran,
@@ -252,14 +244,16 @@ export class VerifikasiPermohonanCutiMpdService {
             {
               id:id,
               isSubmit:true,
-              jangkaWaktu:LessThan(6),
+              jangkaWaktu:MoreThan(12),
               jenisLayanan:0,
+              statusPermohonan:2
 
             },
             {
               id:id,
               isSubmit:true,
-              jenisLayanan:1
+              jenisLayanan:1,
+              statusPermohonan:3
             }
           ]
           ,
@@ -298,18 +292,18 @@ export class VerifikasiPermohonanCutiMpdService {
         
         existing_record.jenisLayanan===0? newValue.statusPermohonan=3: newValue.statusPermohonan=2
         newValue.tanggalVerifikasi=new Date(Date.now())
-        newValue.verifikasiMPD={}
-        newValue.verifikasiMPD.isVerified=true
-        newValue.verifikasiMPD.mpdId=userId        
-        newValue.verifikasiMPD.mpdNama=chosenUsername.nama
-        newValue.verifikasiMPD.kodeVoucher=existing_record.voucherSimpadhu
-        newValue.verifikasiMPD.tanggalVerif=new Date(Date.now())
+        newValue.verifikasiMPP={}
+        newValue.verifikasiMPP.isVerified=true
+        newValue.verifikasiMPP.mppId=userId        
+        newValue.verifikasiMPP.mppNama=chosenUsername.nama
+        newValue.verifikasiMPP.kodeVoucher=existing_record.voucherSimpadhu
+        newValue.verifikasiMPP.tanggalVerif=new Date(Date.now())
 
         newValue.id=id
         await this.cutiRepository.save(newValue)
       }
 
-      async reject(id:string, dtoReject: DtoCutiRejectMPD, userId:string){
+      async reject(id:string, dtoReject: DtoCutiRejectMPP, userId:string){
         const existing_record=await this.findOne(id,false);
         if (existing_record.statusPermohonan>1) {
           throw new BadRequestException("Status Permohonan Cuti sudah pernah diaprove atau di tolak, tidak bisa lagi melakukan verifikasi data cuti")
@@ -329,13 +323,13 @@ export class VerifikasiPermohonanCutiMpdService {
         newValue.statusPermohonan=99
         newValue.CatatanTolakVerifikasi=dtoReject.alasan
         
-        newValue.verifikasiMPD={}
-        newValue.verifikasiMPD.isVerified=false
-        newValue.verifikasiMPD.mpdId=userId        
-        newValue.verifikasiMPD.mpdNama=chosenUsername.nama
-        newValue.verifikasiMPD.kodeVoucher=existing_record.voucherSimpadhu
-        newValue.verifikasiMPD.tanggalVerif=new Date(Date.now())
-        newValue.verifikasiMPD.catatan=dtoReject.alasan
+        newValue.verifikasiMPP={}
+        newValue.verifikasiMPP.isVerified=false
+        newValue.verifikasiMPP.mppId=userId        
+        newValue.verifikasiMPP.mppNama=chosenUsername.nama
+        newValue.verifikasiMPP.kodeVoucher=existing_record.voucherSimpadhu
+        newValue.verifikasiMPP.tanggalVerif=new Date(Date.now())
+        newValue.verifikasiMPP.catatan=dtoReject.alasan
         
 
         await this.cutiRepository.save(newValue)

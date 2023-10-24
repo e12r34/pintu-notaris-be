@@ -2,24 +2,16 @@ import config from 'src/config';
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CutiEntity } from '../entity/cuti.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CutiBeritaAcaraEntity } from '../entity/cuti-berita-acara.entity';
-import { CutiSkPengangkatanPindahEntity } from '../entity/cuti-sk-pengangkatan.entity';
-import { CutiNotarisPemegangProtokolEntity } from '../entity/cuti-notaris-pemegang-protokol.entity';
-import { CutiNotarisPenggantiEntity } from '../entity/cuti-notaris-pengganti.entity';
 import { User } from 'src/auth/user.entity';
-import { Repository, LessThan } from 'typeorm';
+import { Repository, Between } from 'typeorm';
 import { InjectMinio } from 'nestjs-minio';
 import { DtoCutiVerifFindAllRequest, DtoCutiVerifFindAllResponse, DtoCutiVerifFindAllResponseData } from '../dto/verifikasi-permohonan-cuti.dto';
-import { DtoCutiRejectMPD } from './verifikasi-permohonan-cuti-mpd.dto';
+import { DtoCutiRejectMPW } from './verifikasi-permohonan-cuti-mpw.dto';
 
 @Injectable()
-export class VerifikasiPermohonanCutiMpdService {
+export class VerifikasiPermohonanCutiMpwService {
     constructor(
         @InjectRepository(CutiEntity) private cutiRepository: Repository<CutiEntity>,
-        @InjectRepository(CutiBeritaAcaraEntity) private cutiBARepository: Repository<CutiBeritaAcaraEntity>,
-        @InjectRepository(CutiSkPengangkatanPindahEntity) private cutiSKRepository: Repository<CutiSkPengangkatanPindahEntity>,
-        @InjectRepository(CutiNotarisPemegangProtokolEntity) private cutiNotarisProtokolRepository: Repository<CutiNotarisPemegangProtokolEntity>,
-        @InjectRepository(CutiNotarisPenggantiEntity) private cutiNotarisPenggantiRepository: Repository<CutiNotarisPenggantiEntity>,
         @InjectRepository(User) private userRepository: Repository<User>,
         @InjectMinio() private readonly minioClient,
       ) {}
@@ -199,17 +191,12 @@ export class VerifikasiPermohonanCutiMpdService {
     async findAll(userId: string, body: DtoCutiVerifFindAllRequest): Promise<DtoCutiVerifFindAllResponse> {
         const skip = (body.pageIndex - 1) * body.pageSize;
         const records:any = await this.cutiRepository.find({
-          where: [
-            {
-              isSubmit:true,
-              jenisLayanan:0,
-              jangkaWaktu:LessThan(6)
-            },
-            {
-              isSubmit:true,
-              jenisLayanan:1
-            }
-          ],
+          where:
+          {
+            isSubmit:true,
+            jenisLayanan:0,
+            jangkaWaktu:Between(6,12)
+          },
           // relations: ['skPengangkatanPindah', 'beritaAcaraSumpah', 'suratPernyataanJumlahAktaNotaris', 'suratPernyataanPemegangProtokol'],
           select: {
             id: true,
@@ -234,9 +221,9 @@ export class VerifikasiPermohonanCutiMpdService {
         .where('(\
           (cuti.statusPermohonan = 1) \
           AND\
-            (((cuti.jangkaWaktu < 6) AND (cuti.jenisLayanan = 0))\
-            OR \
-            (cuti.jenisLayanan=1))\
+          (cuti.jangkaWaktu BETWEEN 6 AND 12)\
+          AND\
+          (cuti.jenisLayanan = 0)\
           )').getCount();
         const keluaran_lengkap:DtoCutiVerifFindAllResponse ={
           data: keluaran,
@@ -252,13 +239,14 @@ export class VerifikasiPermohonanCutiMpdService {
             {
               id:id,
               isSubmit:true,
-              jangkaWaktu:LessThan(6),
+              jangkaWaktu:Between(6,12),
               jenisLayanan:0,
 
             },
             {
               id:id,
               isSubmit:true,
+              statusPermohonan:1,
               jenisLayanan:1
             }
           ]
@@ -293,23 +281,22 @@ export class VerifikasiPermohonanCutiMpdService {
           }
         })
 
-        console.log(id)
         var newValue: any={}
         
-        existing_record.jenisLayanan===0? newValue.statusPermohonan=3: newValue.statusPermohonan=2
+        newValue.statusPermohonan=3
         newValue.tanggalVerifikasi=new Date(Date.now())
-        newValue.verifikasiMPD={}
-        newValue.verifikasiMPD.isVerified=true
-        newValue.verifikasiMPD.mpdId=userId        
-        newValue.verifikasiMPD.mpdNama=chosenUsername.nama
-        newValue.verifikasiMPD.kodeVoucher=existing_record.voucherSimpadhu
-        newValue.verifikasiMPD.tanggalVerif=new Date(Date.now())
+        newValue.verifikasiMPW={}
+        newValue.verifikasiMPW.isVerified=true
+        newValue.verifikasiMPW.mpwId=userId        
+        newValue.verifikasiMPW.mpwNama=chosenUsername.nama
+        newValue.verifikasiMPW.kodeVoucher=existing_record.voucherSimpadhu
+        newValue.verifikasiMPW.tanggalVerif=new Date(Date.now())
 
         newValue.id=id
         await this.cutiRepository.save(newValue)
       }
 
-      async reject(id:string, dtoReject: DtoCutiRejectMPD, userId:string){
+      async reject(id:string, dtoReject: DtoCutiRejectMPW, userId:string){
         const existing_record=await this.findOne(id,false);
         if (existing_record.statusPermohonan>1) {
           throw new BadRequestException("Status Permohonan Cuti sudah pernah diaprove atau di tolak, tidak bisa lagi melakukan verifikasi data cuti")
@@ -329,13 +316,13 @@ export class VerifikasiPermohonanCutiMpdService {
         newValue.statusPermohonan=99
         newValue.CatatanTolakVerifikasi=dtoReject.alasan
         
-        newValue.verifikasiMPD={}
-        newValue.verifikasiMPD.isVerified=false
-        newValue.verifikasiMPD.mpdId=userId        
-        newValue.verifikasiMPD.mpdNama=chosenUsername.nama
-        newValue.verifikasiMPD.kodeVoucher=existing_record.voucherSimpadhu
-        newValue.verifikasiMPD.tanggalVerif=new Date(Date.now())
-        newValue.verifikasiMPD.catatan=dtoReject.alasan
+        newValue.verifikasiMPW={}
+        newValue.verifikasiMPW.isVerified=false
+        newValue.verifikasiMPW.mpwId=userId        
+        newValue.verifikasiMPW.mpwNama=chosenUsername.nama
+        newValue.verifikasiMPW.kodeVoucher=existing_record.voucherSimpadhu
+        newValue.verifikasiMPW.tanggalVerif=new Date(Date.now())
+        newValue.verifikasiMPW.catatan=dtoReject.alasan
         
 
         await this.cutiRepository.save(newValue)

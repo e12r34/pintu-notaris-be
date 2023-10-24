@@ -13,11 +13,19 @@ import { CutiNotarisPenggantiEntity } from './entity/cuti-notaris-pengganti.enti
 import { CutiSkPengangkatanPindahEntity } from './entity/cuti-sk-pengangkatan.entity';
 import { VerifikasiPermohonanCutiMpdController } from './verifikasi-permohonan-cuti-mpd/verifikasi-permohonan-cuti-mpd.controller';
 import { VerifikasiPermohonanCutiMpdService } from './verifikasi-permohonan-cuti-mpd/verifikasi-permohonan-cuti-mpd.service';
+import { VerifikasiPermohonanCutiMpwService } from './verifikasi-permohonan-cuti-mpw/verifikasi-permohonan-cuti-mpw.service';
+import { VerifikasiPermohonanCutiMpwController } from './verifikasi-permohonan-cuti-mpw/verifikasi-permohonan-cuti-mpw.controller';
 
 dotenv.config();
 @Module({
-  providers: [CutiService, VerifikasiPermohonanCutiMpdService],
-  controllers:[CutiController, VerifikasiPermohonanCutiMpdController],
+  providers: [
+    CutiService, 
+    VerifikasiPermohonanCutiMpdService, 
+    VerifikasiPermohonanCutiMpwService],
+  controllers:[
+    CutiController, 
+    VerifikasiPermohonanCutiMpdController, 
+    VerifikasiPermohonanCutiMpwController],
   imports:[
     TypeOrmModule.forFeature([
       CutiEntity, 
