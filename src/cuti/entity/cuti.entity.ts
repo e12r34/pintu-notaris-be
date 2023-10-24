@@ -38,7 +38,7 @@ export class CutiEntity {
   @Column()
   alasanCuti: number;
 
-  @Column({default:new Date(Date.now())})
+  @Column({default:nows()})
   tanggalPermohonan: Date;
 
   @Column()
