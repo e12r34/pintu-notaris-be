@@ -6,13 +6,12 @@ import { Cache } from 'cache-manager';
 import { Roles } from 'src/role/role.decorator';
 import { Role } from 'src/role/role.enum';
 import { Response, Request } from 'express';
-import { DtoCutiFindAllResponse, DtoCutiRequest, DtoCutiFindAllRequest } from './cuti.dto';
+import { DtoCutiRequest, DtoCutiFindAllRequest } from './dto/cuti.dto';
 import { generateCacheKeyCuti } from 'src/kondite/kondite.function';
 import { CutiEntity } from './entity/cuti.entity';
-import { parsingTanggal } from './cuti.function';
 
 @ApiBearerAuth()
-@ApiTags('Cuti')
+@ApiTags('Permohonan Cuti')
 @Controller('api/cuti')
 export class CutiController {
     userId:string;
@@ -90,7 +89,7 @@ export class CutiController {
 
     @Get(':id')
     @Roles(Role.Notaris)
-    async getAKondite(
+    async getACuti(
         @Res() res: Response,
         @Req() req: Request,
         @Param('id') id: string)
@@ -124,7 +123,7 @@ export class CutiController {
         type: DtoCutiRequest, // Specify the DTO class representing the request body
         description: 'Edit sebuah record cuti', // Description of the request body
       })
-    async updateKondite(
+    async updateCuti(
         @Res() res: Response,
         @Param('id') id: string, 
         @Req() req: Request,

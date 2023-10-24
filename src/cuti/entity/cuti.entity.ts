@@ -4,6 +4,9 @@ import { CutiBeritaAcaraEntity } from './cuti-berita-acara.entity';
 import { CutiNotarisPenggantiEntity } from './cuti-notaris-pengganti.entity';
 import { CutiNotarisPemegangProtokolEntity } from './cuti-notaris-pemegang-protokol.entity';
 import { nows } from '../cuti.function';
+import { CutiVerifikasiMPD } from './cuti-verifikasi-mpd.entity';
+import { CutiVerifikasiMPP } from './cuti-verifikasi-mpp.entity';
+import { CutiVerifikasiMPW } from './cuti-verifikasi-mpw.entity';
 
 @Entity('Cuti') // Make sure the name matches your table name in the database
 export class CutiEntity {
@@ -16,8 +19,11 @@ export class CutiEntity {
 
   @Column()
   userId: string;
-  
+
   @Column()
+  namaNotaris: string;
+  
+  @Column({default:0})
   jenisLayanan: number;
 
   @Column()
@@ -47,6 +53,15 @@ export class CutiEntity {
   @Column({default:0})
   statusPermohonan: number;
 
+  @Column({default:"0000-00-00 00:00:00"})
+  tanggalVerifikasi: Date;
+
+  @Column({default:""})
+  CatatanTolakVerifikasi: string;
+
+  @Column({default:false})
+  isSubmit: boolean;
+
   @OneToOne(() => CutiSkPengangkatanPindahEntity, {cascade:true, onDelete:'CASCADE', onUpdate:'CASCADE'})
   @JoinColumn()
   skPengangkatan: CutiSkPengangkatanPindahEntity;
@@ -62,4 +77,16 @@ export class CutiEntity {
   @OneToOne(() => CutiNotarisPemegangProtokolEntity, { cascade: true, onDelete:'CASCADE',onUpdate:'CASCADE' })
   @JoinColumn()
   notarisPemegangProtokol: CutiNotarisPemegangProtokolEntity
+
+  @OneToOne(() => CutiVerifikasiMPD, {cascade:true, onDelete:'CASCADE', onUpdate:'CASCADE'})
+  @JoinColumn()
+  verifikasiMPD: CutiVerifikasiMPD;
+
+  @OneToOne(() => CutiVerifikasiMPW, {cascade:true, onDelete:'CASCADE', onUpdate:'CASCADE'})
+  @JoinColumn()
+  verifikasiMPW: CutiVerifikasiMPW;
+
+  @OneToOne(() => CutiVerifikasiMPP, {cascade:true, onDelete:'CASCADE', onUpdate:'CASCADE'})
+  @JoinColumn()
+  verifikasiMPP: CutiVerifikasiMPP;
 }

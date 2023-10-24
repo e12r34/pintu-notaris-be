@@ -23,6 +23,11 @@ import { CutiSkPengangkatanPindahEntity } from './cuti/entity/cuti-sk-pengangkat
 import { CutiBeritaAcaraEntity } from './cuti/entity/cuti-berita-acara.entity';
 import { CutiNotarisPemegangProtokolEntity } from './cuti/entity/cuti-notaris-pemegang-protokol.entity';
 import { CutiNotarisPenggantiEntity } from './cuti/entity/cuti-notaris-pengganti.entity';
+import { VerifikasiPermohonanCutiMpdController } from './cuti/verifikasi-permohonan-cuti-mpd/verifikasi-permohonan-cuti-mpd.controller';
+import { VerifikasiPermohonanCutiMpdService } from './cuti/verifikasi-permohonan-cuti-mpd/verifikasi-permohonan-cuti-mpd.service';
+import { CutiVerifikasiMPD } from './cuti/entity/cuti-verifikasi-mpd.entity';
+import { CutiVerifikasiMPW } from './cuti/entity/cuti-verifikasi-mpw.entity';
+import { CutiVerifikasiMPP } from './cuti/entity/cuti-verifikasi-mpp.entity';
 
 dotenv.config();
 
@@ -49,7 +54,10 @@ dotenv.config();
         CutiSkPengangkatanPindahEntity,
         CutiBeritaAcaraEntity,
         CutiNotarisPemegangProtokolEntity,
-        CutiNotarisPenggantiEntity
+        CutiNotarisPenggantiEntity,
+        CutiVerifikasiMPD,
+        CutiVerifikasiMPW,
+        CutiVerifikasiMPP
       ],
       // set to true in the new database, set false, to existing database
       synchronize: process.env.DB_SYNCHRONIZE === 'true',
@@ -76,7 +84,7 @@ dotenv.config();
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
-    },
+    }
   ],
 })
 export class AppModule {

@@ -11,11 +11,13 @@ import { CutiBeritaAcaraEntity } from './entity/cuti-berita-acara.entity';
 import { CutiNotarisPemegangProtokolEntity } from './entity/cuti-notaris-pemegang-protokol.entity';
 import { CutiNotarisPenggantiEntity } from './entity/cuti-notaris-pengganti.entity';
 import { CutiSkPengangkatanPindahEntity } from './entity/cuti-sk-pengangkatan.entity';
+import { VerifikasiPermohonanCutiMpdController } from './verifikasi-permohonan-cuti-mpd/verifikasi-permohonan-cuti-mpd.controller';
+import { VerifikasiPermohonanCutiMpdService } from './verifikasi-permohonan-cuti-mpd/verifikasi-permohonan-cuti-mpd.service';
 
 dotenv.config();
 @Module({
-  providers: [CutiService],
-  controllers:[CutiController],
+  providers: [CutiService, VerifikasiPermohonanCutiMpdService],
+  controllers:[CutiController, VerifikasiPermohonanCutiMpdController],
   imports:[
     TypeOrmModule.forFeature([
       CutiEntity, 

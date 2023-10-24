@@ -3,7 +3,7 @@ import { InjectMinio } from 'nestjs-minio';
 import { CutiEntity } from './entity/cuti.entity';
 import { Brackets, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DtoCutiFindAllRequest, DtoCutiFindAllResponse, DtoCutiFindAllResponseData, DtoCutiRequest } from './cuti.dto';
+import { DtoCutiFindAllRequest, DtoCutiFindAllResponse, DtoCutiFindAllResponseData, DtoCutiRequest } from './dto/cuti.dto';
 import * as uuid from 'uuid';
 import config from 'src/config';
 import { User } from 'src/auth/user.entity';
@@ -410,10 +410,19 @@ export class CutiService {
         }
         cutiData.voucherSimpadhu?newCutiData.voucherSimpadhu=cutiData.voucherSimpadhu:null
         newCutiData.userId=userId
+        const chosenUsername = await this.userRepository.findOne({
+          where:{
+            id: userId
+          },
+          select:{
+            nama: true,
+          }
+        })
+        newCutiData.namaNotaris=chosenUsername.nama
 
         const latestRecord = await this.cutiRepository
           .createQueryBuilder('cuti')
-          .orderBy('cuti.tanggalPermohonan', 'DESC')
+          .orderBy('cuti.nomorPermohonan', 'DESC')
           .getOne();
         if (latestRecord) {
           const pisah = latestRecord.nomorPermohonan.split("-")
@@ -452,7 +461,7 @@ export class CutiService {
       async findOne(id: string, userId: string, isGetFile: Boolean=true): Promise<CutiEntity> {
         const record:any= await this.cutiRepository.findOne({
           where: { id, userId },
-          relations: ['skPengangkatan', 'beritaAcara', 'notarisPenggantiSementara', 'notarisPemegangProtokol'],
+          relations: ['skPengangkatan', 'beritaAcara', 'notarisPenggantiSementara', 'notarisPemegangProtokol','verifikasiMPD','verifikasiMPW','verifikasiMPP'],
         });
         if (!record) {
           throw new NotFoundException('Record Cuti Not found');
@@ -481,6 +490,7 @@ export class CutiService {
             tanggalPermohonan: true,
             nomorPermohonan: true,
             statusPermohonan: true,
+            namaNotaris:true,
             userId: true,
             tanggalMulai:true,
             jangkaWaktu:true,
@@ -493,29 +503,29 @@ export class CutiService {
           throw new NotFoundException('Records Cuti Not found')
         }
   
-        var namaNotaris:any={}
         var keluaran: DtoCutiFindAllResponseData[]=[]
         records.forEach(async record => {
-          if (namaNotaris.hasOwnProperty(record.userId) ) {
-            record['namaNotaris']=namaNotaris[record.userId]
-          }
-          else{
-            const chosenUsername = await this.userRepository.findOne({
-              where:{
-                id: record.userId
-              },
-              select:{
-                nama: true,
-              }
-            })
-            namaNotaris[record.userId]=chosenUsername.nama
-            record['namaNotaris']=namaNotaris[record.userId]
-          }
+          // if (namaNotaris.hasOwnProperty(record.userId) ) {
+          //   record['namaNotaris']=namaNotaris[record.userId]
+          // }
+          // else{
+          //   const chosenUsername = await this.userRepository.findOne({
+          //     where:{
+          //       id: record.userId
+          //     },
+          //     select:{
+          //       nama: true,
+          //     }
+          //   })
+          //   namaNotaris[record.userId]=chosenUsername.nama
+          //   record['namaNotaris']=namaNotaris[record.userId]
+          // }
 
           keluaran.push(record)
           
         });
-        const totalCount = await this.cutiRepository.count();
+        const totalCount = await this.cutiRepository.createQueryBuilder('cuti')
+        .where('cuti.userId = :userId', { userId }).getCount();
         const keluaran_lengkap:DtoCutiFindAllResponse ={
           data: keluaran,
           total: totalCount
@@ -725,7 +735,7 @@ export class CutiService {
             cutiData.notarisPemegangProtokol.alamat?newCutiData.notarisPemegangProtokol.alamat=cutiData.notarisPemegangProtokol.alamat:null
         }
         cutiData.voucherSimpadhu?newCutiData.voucherSimpadhu=cutiData.voucherSimpadhu:null
-        newCutiData.userId=userId
+        // newCutiData.userId=userId
         newCutiData.id=id
         await this.cutiRepository.save(newCutiData);
         return this.findOne(id, userId,true);
@@ -754,6 +764,6 @@ export class CutiService {
         if (existing_record.statusPermohonan>0) {
           throw new BadRequestException("Status Permohonan Cuti sudah pernah dikirim, tidak bisa lagi mengubah data cuti")
         }
-        await this.cutiRepository.update(id,{statusPermohonan:1})
+        await this.cutiRepository.update(id,{statusPermohonan:1,isSubmit:true})
       }
 }
