@@ -15,17 +15,23 @@ import { VerifikasiPermohonanCutiMpdController } from './verifikasi-permohonan-c
 import { VerifikasiPermohonanCutiMpdService } from './verifikasi-permohonan-cuti-mpd/verifikasi-permohonan-cuti-mpd.service';
 import { VerifikasiPermohonanCutiMpwService } from './verifikasi-permohonan-cuti-mpw/verifikasi-permohonan-cuti-mpw.service';
 import { VerifikasiPermohonanCutiMpwController } from './verifikasi-permohonan-cuti-mpw/verifikasi-permohonan-cuti-mpw.controller';
+import { VerifikasiPermohonanCutiMppService } from './verifikasi-permohonan-cuti-mpp/verifikasi-permohonan-cuti-mpp.service';
+import { VerifikasiPermohonanCutiMppController } from './verifikasi-permohonan-cuti-mpp/verifikasi-permohonan-cuti-mpp.controller';
 
 dotenv.config();
 @Module({
   providers: [
     CutiService, 
     VerifikasiPermohonanCutiMpdService, 
-    VerifikasiPermohonanCutiMpwService],
+    VerifikasiPermohonanCutiMpwService,
+    VerifikasiPermohonanCutiMppService
+  ],
   controllers:[
     CutiController, 
     VerifikasiPermohonanCutiMpdController, 
-    VerifikasiPermohonanCutiMpwController],
+    VerifikasiPermohonanCutiMpwController,
+    VerifikasiPermohonanCutiMppController
+  ],
   imports:[
     TypeOrmModule.forFeature([
       CutiEntity, 
