@@ -3,7 +3,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { CutiEntity } from '../entity/cuti.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/user.entity';
-import { Repository, Between } from 'typeorm';
+import { Repository, Between, ILike } from 'typeorm';
 import { InjectMinio } from 'nestjs-minio';
 import { DtoCutiVerifFindAllRequest, DtoCutiVerifFindAllResponse, DtoCutiVerifFindAllResponseData } from '../dto/verifikasi-permohonan-cuti.dto';
 import { DtoCutiRejectMPW } from './verifikasi-permohonan-cuti-mpw.dto';
@@ -188,51 +188,66 @@ export class VerifikasiPermohonanCutiMpwService {
         return record
       }
 
-    async findAll(userId: string, body: DtoCutiVerifFindAllRequest): Promise<DtoCutiVerifFindAllResponse> {
-        const skip = (body.pageIndex - 1) * body.pageSize;
-        const records:any = await this.cutiRepository.find({
-          where:
+      async findAll(userId: string, body: DtoCutiVerifFindAllRequest): Promise<DtoCutiVerifFindAllResponse> {
+        let sort = {};
+        if (body.sortBy) {
+            sort['order'] = {
+                [body.sortBy]: body.isSortAscending ? 'ASC' : 'DESC'
+            };
+        }
+        
+        const searchConditions = [];
+        if (body.stringPencarian) {
+            searchConditions.push({ nomorPermohonan: ILike(`%${body.stringPencarian}%`) });
+            searchConditions.push({ namaNotaris: ILike(`%${body.stringPencarian}%`) });
+        }
+ 
+        const combinedConditions = [
           {
-            isSubmit:true,
-            jenisLayanan:0,
-            jangkaWaktu:Between(6,12)
+              isSubmit:true,
+              jenisLayanan:0,
+              jangkaWaktu:Between(6,12),
+              statusPermohonan: 1,
           },
-          // relations: ['skPengangkatanPindah', 'beritaAcaraSumpah', 'suratPernyataanJumlahAktaNotaris', 'suratPernyataanPemegangProtokol'],
-          select: {
-            id: true,
-            jenisLayanan: true,
-            tanggalPermohonan: true,
-            nomorPermohonan: true,
-            statusPermohonan: true,
-            userId: true,
-            tanggalMulai:true,
-            jangkaWaktu:true,
-            tanggalSelesai:true
-          },
-          take: body.pageSize,
-          skip: skip,
-        });
-        if (records.length===0) {
-          throw new NotFoundException('Records Cuti Not found')
-        }
-        var keluaran: DtoCutiVerifFindAllResponseData[]=[...records]
-        // const totalCount = await this.cutiRepository.count();
-        const totalCount = await this.cutiRepository.createQueryBuilder('cuti')
-        .where('(\
-          (cuti.statusPermohonan = 1) \
-          AND\
-          (cuti.jangkaWaktu BETWEEN 6 AND 12)\
-          AND\
-          (cuti.jenisLayanan = 0)\
-          )').getCount();
-        const keluaran_lengkap:DtoCutiVerifFindAllResponse ={
-          data: keluaran,
-          total: totalCount
-        }
-        return keluaran_lengkap
-        // return keluaran
 
+        ];
+    
+        if (searchConditions.length > 0) {
+            combinedConditions.forEach(cond => Object.assign(cond, { or: searchConditions }));
+        }
+    
+        const skip = (body.pageIndex - 1) * body.pageSize;
+        const records: any = await this.cutiRepository.find({
+            ...sort,
+            where: combinedConditions,
+            select: {
+              id: true,
+              jenisLayanan: true,
+              tanggalPermohonan: true,
+              nomorPermohonan: true,
+              statusPermohonan: true,
+              userId: true,
+              namaNotaris:true,
+              tanggalMulai:true,
+              jangkaWaktu:true,
+              tanggalSelesai:true
+            },
+            take: body.pageSize,
+            skip: skip,
+        });
+    
+        if (records.length === 0) {
+            throw new NotFoundException('Records Cuti Not found');
+        }
+    
+        const totalCount = await this.cutiRepository.count({ where: combinedConditions });
+    
+        return {
+            data: [...records],
+            total: totalCount
+        };
       }
+
       async findOne(id: string, isGetFile: Boolean=true): Promise<CutiEntity> {
         const record:any= await this.cutiRepository.findOne({
           where:  [

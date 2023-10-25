@@ -54,31 +54,30 @@ export class CutiController {
     @ApiQuery({ name: 'pageSize', type: Number, required: false, description: 'Page Size' })
     @ApiQuery({ name: 'stringPencarian', type: String, required: false, description: 'string yang akan dicari' })
     @ApiQuery({ name: 'sortBy', type: String, required: false, description: 'di sort dari field apa' })
+    @ApiQuery({ name: 'isSortAscending', type: Boolean, required: false, description: 'apakah field ASCENDING' })
     async getAllKondite(
         @Res() res: Response,
         @Req() req: Request,
         @Query('pageIndex') pageIndex: number = 1,
         @Query('pageSize') pageSize: number = 10,
         @Query('stringPencarian') stringPencarian?: string,
-        @Query('sortBy') sortBy?: string,)
+        @Query('sortBy') sortBy?: string,
+        @Query('isSortAscending') isSortAscending: boolean=true)
     {
         try{
             const body: DtoCutiFindAllRequest={
                 pageIndex:pageIndex,
                 pageSize:pageSize,
                 stringPencarian:stringPencarian,
-                sortBy:sortBy
+                sortBy:sortBy,
+                isSortAscending:isSortAscending
             }
-            // const cachedKonditeEntries = await this.cacheManager.get<DtoCutiFindAllResponse[]>(generateCacheKeyCuti(this.userId,null,body));
-            // if (cachedKonditeEntries) {
-            //     return res.json(cachedKonditeEntries);
-            // }
+
             this.userId=req.user['id']
             if (!this.userId) {
                 throw new UnauthorizedException('No user id found');
             }
             const cutiEntries = await this.cutiService.findAll(this.userId,body);
-            // await this.cacheManager.set(generateCacheKeyCuti(this.userId,null,body), cutiEntries, 30);
             res.json(cutiEntries);
             
         }

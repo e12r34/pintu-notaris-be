@@ -7,7 +7,7 @@ import { CutiSkPengangkatanPindahEntity } from '../entity/cuti-sk-pengangkatan.e
 import { CutiNotarisPemegangProtokolEntity } from '../entity/cuti-notaris-pemegang-protokol.entity';
 import { CutiNotarisPenggantiEntity } from '../entity/cuti-notaris-pengganti.entity';
 import { User } from 'src/auth/user.entity';
-import { Repository, LessThan } from 'typeorm';
+import { Repository, LessThan, ILike } from 'typeorm';
 import { InjectMinio } from 'nestjs-minio';
 import { DtoCutiVerifFindAllRequest, DtoCutiVerifFindAllResponse, DtoCutiVerifFindAllResponseData } from '../dto/verifikasi-permohonan-cuti.dto';
 import { DtoCutiRejectMPD } from './verifikasi-permohonan-cuti-mpd.dto';
@@ -196,56 +196,74 @@ export class VerifikasiPermohonanCutiMpdService {
         return record
       }
 
-    async findAll(userId: string, body: DtoCutiVerifFindAllRequest): Promise<DtoCutiVerifFindAllResponse> {
-        const skip = (body.pageIndex - 1) * body.pageSize;
-        const records:any = await this.cutiRepository.find({
-          where: [
-            {
-              isSubmit:true,
-              jenisLayanan:0,
-              jangkaWaktu:LessThan(6)
-            },
-            {
-              isSubmit:true,
-              jenisLayanan:1
-            }
-          ],
-          // relations: ['skPengangkatanPindah', 'beritaAcaraSumpah', 'suratPernyataanJumlahAktaNotaris', 'suratPernyataanPemegangProtokol'],
-          select: {
-            id: true,
-            jenisLayanan: true,
-            tanggalPermohonan: true,
-            nomorPermohonan: true,
-            statusPermohonan: true,
-            userId: true,
-            tanggalMulai:true,
-            jangkaWaktu:true,
-            tanggalSelesai:true
+      async findAll(userId: string, body: DtoCutiVerifFindAllRequest): Promise<DtoCutiVerifFindAllResponse> {
+        let sort = {};
+        if (body.sortBy) {
+            sort['order'] = {
+                [body.sortBy]: body.isSortAscending ? 'ASC' : 'DESC'
+            };
+        }
+        
+        const searchConditions = [];
+        if (body.stringPencarian) {
+            searchConditions.push({ nomorPermohonan: ILike(`%${body.stringPencarian}%`) });
+            searchConditions.push({ namaNotaris: ILike(`%${body.stringPencarian}%`) });
+        }
+    
+        const commonConditions = { 
+            isSubmit: true 
+        };
+    
+        const combinedConditions = [
+          {
+            ...commonConditions,
+            isSubmit:true,
+            jenisLayanan:0,
+            jangkaWaktu:LessThan(6)
           },
-          take: body.pageSize,
-          skip: skip,
+          {
+            ...commonConditions,
+            isSubmit:true,
+            jenisLayanan:1
+          }
+        ];
+    
+        if (searchConditions.length > 0) {
+            combinedConditions.forEach(cond => Object.assign(cond, { or: searchConditions }));
+        }
+    
+        const skip = (body.pageIndex - 1) * body.pageSize;
+        const records: any = await this.cutiRepository.find({
+            ...sort,
+            where: combinedConditions,
+            select: {
+              id: true,
+              jenisLayanan: true,
+              tanggalPermohonan: true,
+              nomorPermohonan: true,
+              statusPermohonan: true,
+              userId: true,
+              namaNotaris:true,
+              tanggalMulai:true,
+              jangkaWaktu:true,
+              tanggalSelesai:true
+            },
+            take: body.pageSize,
+            skip: skip,
         });
-        if (records.length===0) {
-          throw new NotFoundException('Records Cuti Not found')
+    
+        if (records.length === 0) {
+            throw new NotFoundException('Records Cuti Not found');
         }
-        var keluaran: DtoCutiVerifFindAllResponseData[]=[...records]
-        // const totalCount = await this.cutiRepository.count();
-        const totalCount = await this.cutiRepository.createQueryBuilder('cuti')
-        .where('(\
-          (cuti.statusPermohonan = 1) \
-          AND\
-            (((cuti.jangkaWaktu < 6) AND (cuti.jenisLayanan = 0))\
-            OR \
-            (cuti.jenisLayanan=1))\
-          )').getCount();
-        const keluaran_lengkap:DtoCutiVerifFindAllResponse ={
-          data: keluaran,
-          total: totalCount
-        }
-        return keluaran_lengkap
-        // return keluaran
-
+    
+        const totalCount = await this.cutiRepository.count({ where: combinedConditions });
+    
+        return {
+            data: [...records],
+            total: totalCount
+        };
       }
+
       async findOne(id: string, isGetFile: Boolean=true): Promise<CutiEntity> {
         const record:any= await this.cutiRepository.findOne({
           where:  [

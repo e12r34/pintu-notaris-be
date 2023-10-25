@@ -6,6 +6,9 @@ import config from 'src/config';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Module({
   providers: [AuthService],
@@ -14,7 +17,7 @@ import { User } from './user.entity';
     JwtModule.register({
     global: true,
     secret: config.secret,
-    signOptions: { expiresIn: 1800 },
+    signOptions: { expiresIn: process.env.JWT_ACCESS_EXPIRED_TIME },
   }),
   TypeOrmModule.forFeature([User]),
   PassportModule

@@ -27,18 +27,21 @@ export class VerifikasiPermohonanCutiMpwController {
     @ApiQuery({ name: 'pageSize', type: Number, required: false, description: 'Page Size' })
     @ApiQuery({ name: 'stringPencarian', type: String, required: false, description: 'string yang akan dicari' })
     @ApiQuery({ name: 'sortBy', type: String, required: false, description: 'di sort dari field apa' })
+    @ApiQuery({ name: 'isSortAscending', type: Boolean, required: false, description: 'apakah field ASCENDING' })
     async getAllVerif(
         @Res() res: Response,
         @Req() req: Request,
         @Query('pageIndex') pageIndex: number = 1,
         @Query('pageSize') pageSize: number = 10,
         @Query('stringPencarian') stringPencarian?: string,
-        @Query('sortBy') sortBy?: string) {
+        @Query('sortBy') sortBy?: string,
+        @Query('isSortAscending') isSortAscending: boolean=true) {
             const body: DtoCutiVerifFindAllRequest={
                 pageIndex:pageIndex,
                 pageSize:pageSize,
                 stringPencarian:stringPencarian,
-                sortBy:sortBy
+                sortBy:sortBy,
+                isSortAscending:isSortAscending
             }
             this.userId=req.user['id']
             if (!this.userId) {

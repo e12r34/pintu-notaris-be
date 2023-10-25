@@ -1,8 +1,9 @@
 export class DtoCutiVerifFindAllRequest{
     pageIndex?:number
     pageSize?:number
-    stringPencarian?:any;
-    sortBy?:any;
+    stringPencarian?:string;
+    sortBy?:string;
+    isSortAscending?:boolean
 }
 
 export class DtoCutiVerifFindAllResponseData{

@@ -5,7 +5,8 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import config from 'src/config';
-
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 // export type User = any;
 @Injectable()
@@ -72,7 +73,7 @@ export class AuthService {
           },
           {
             secret: config.refreshSecret,
-            expiresIn: '1d'
+            expiresIn: process.env.JWT_ACCESS_EXPIRED_TIME
           }
           )
     };

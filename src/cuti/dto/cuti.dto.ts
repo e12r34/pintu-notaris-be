@@ -57,6 +57,7 @@ export class DtoCutiFindAllRequest{
     pageSize?:number
     stringPencarian?:any;
     sortBy?:any;
+    isSortAscending?:boolean
 }
 
 export class DtoCutiFindAllResponseData{

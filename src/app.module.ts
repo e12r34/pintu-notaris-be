@@ -16,15 +16,12 @@ import { SuratPernyataanJumlahAktaNotarisEntity } from './kondite/entity/surat-p
 import { SuratPernyataanPemegangProtokolEntity } from './kondite/entity/surat-pernyataan-pemegang-protokol.entity';
 import * as dotenv from 'dotenv';
 import { RolesGuard } from './role/role.guard';
-import { CutiController } from './cuti/cuti.controller';
 import { CutiModule } from './cuti/cuti.module';
 import { CutiEntity } from './cuti/entity/cuti.entity';
 import { CutiSkPengangkatanPindahEntity } from './cuti/entity/cuti-sk-pengangkatan.entity';
 import { CutiBeritaAcaraEntity } from './cuti/entity/cuti-berita-acara.entity';
 import { CutiNotarisPemegangProtokolEntity } from './cuti/entity/cuti-notaris-pemegang-protokol.entity';
 import { CutiNotarisPenggantiEntity } from './cuti/entity/cuti-notaris-pengganti.entity';
-import { VerifikasiPermohonanCutiMpdController } from './cuti/verifikasi-permohonan-cuti-mpd/verifikasi-permohonan-cuti-mpd.controller';
-import { VerifikasiPermohonanCutiMpdService } from './cuti/verifikasi-permohonan-cuti-mpd/verifikasi-permohonan-cuti-mpd.service';
 import { CutiVerifikasiMPD } from './cuti/entity/cuti-verifikasi-mpd.entity';
 import { CutiVerifikasiMPW } from './cuti/entity/cuti-verifikasi-mpw.entity';
 import { CutiVerifikasiMPP } from './cuti/entity/cuti-verifikasi-mpp.entity';

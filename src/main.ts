@@ -10,15 +10,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors()
   const config = new DocumentBuilder()
-  .setTitle('API Cuti dan Kondite')
-  .setDescription('Dokumentasi API untuk endpoint Cuti dan Kondite')
+  .setTitle('API Cuti')
+  .setDescription('Dokumentasi API untuk endpoint Cuti')
   .setVersion('1.0')
   .addTag('api')
   .addBearerAuth()
   .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swagger', app, document);
+  SwaggerModule.setup('swagger-cuti', app, document);
   app.use(express.json({ limit: process.env.APP_LIMIT_JSON }));
   app.use(express.urlencoded({ extended: true, limit: process.env.APP_LIMIT_URL_ENCODED }));
 
