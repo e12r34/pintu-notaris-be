@@ -18,7 +18,7 @@ async function bootstrap() {
   .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swagger-cuti', app, document);
+  SwaggerModule.setup('swagger', app, document);
   app.use(express.json({ limit: process.env.APP_LIMIT_JSON }));
   app.use(express.urlencoded({ extended: true, limit: process.env.APP_LIMIT_URL_ENCODED }));
 
